@@ -1,0 +1,12 @@
+.product-hsn-code {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.product-hsn-code strong {
+    display: block;
+    margin-bottom: 5px;
+    color: <?php echo get_option( 'product_hsn_code_color', '#333' ); ?>;
+}
