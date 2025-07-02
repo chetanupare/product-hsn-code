@@ -1,0 +1,197 @@
+/* WooHSN Frontend Styles */
+
+.woohsn-display {
+    margin: 10px 0;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.woohsn-single-product {
+    margin: 15px 0;
+}
+
+.woohsn-shop-loop {
+    margin: 5px 0;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+.woohsn-cart-hsn {
+    color: #666;
+    font-size: 11px;
+}
+
+.woohsn-order-hsn {
+    margin: 5px 0;
+    color: #666;
+    font-size: 12px;
+}
+
+.woohsn-gst-rate {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.woohsn-shortcode {
+    display: inline-block;
+}
+
+.woohsn-code-display {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.woohsn-no-code {
+    color: #999;
+    font-style: italic;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .woohsn-display {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .woohsn-single-product {
+        margin: 10px 0;
+    }
+}
+
+/* WooHSN Pro Frontend Styles */
+
+.woohsn-pro-display {
+    font-family: inherit;
+    line-height: 1.4;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.woohsn-pro-display:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.woohsn-pro-single-product {
+    margin: 15px 0;
+}
+
+.woohsn-pro-shop-loop {
+    margin: 8px 0;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+.woohsn-pro-gst-rate {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.woohsn-pro-cart-hsn {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.woohsn-pro-order-hsn {
+    margin: 5px 0;
+    padding: 5px 10px;
+    background: #f8f9fa;
+    border-left: 3px solid #667eea;
+    font-size: 13px;
+}
+
+.woohsn-pro-order-gst-rate {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.woohsn-pro-order-gst-amount {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.woohsn-pro-shortcode {
+    display: inline-block;
+    padding: 2px 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: #495057;
+}
+
+/* Tax calculator widget */
+.woohsn-pro-tax-calculator {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.woohsn-pro-tax-calculator h4 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.woohsn-pro-tax-breakdown {
+    margin-top: 15px;
+}
+
+.woohsn-pro-tax-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.woohsn-pro-tax-row:last-child {
+    border-bottom: none;
+    font-weight: bold;
+    border-top: 2px solid #dee2e6;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.woohsn-pro-tax-label {
+    color: #495057;
+}
+
+.woohsn-pro-tax-value {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .woohsn-pro-display {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .woohsn-pro-tax-calculator {
+        padding: 15px;
+    }
+    
+    .woohsn-pro-tax-row {
+        font-size: 14px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .woohsn-pro-display {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+    
+    .woohsn-pro-order-hsn {
+        background: white !important;
+        border-left: 2px solid #000 !important;
+    }
+}
