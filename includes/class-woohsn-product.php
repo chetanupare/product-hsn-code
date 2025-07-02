@@ -1,6 +1,6 @@
 <?php
 /**
- * Product functionality for WooHSN Pro
+ * Product functionality for WooHSN
  */
 
 // Prevent direct access
@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class WooHSN_Pro_Product {
+class WooHSN_Product {
     
     /**
      * Constructor
@@ -22,7 +22,8 @@ class WooHSN_Pro_Product {
         add_action('manage_product_posts_custom_column', array($this, 'display_product_column'), 10, 2);
         add_filter('manage_edit-product_sortable_columns', array($this, 'make_product_column_sortable'));
         add_action('pre_get_posts', array($this, 'handle_column_sorting'));
-        add_action('wp_ajax_woohsn_pro_suggest_hsn', array($this, 'ajax_suggest_hsn'));
+        add_action('wp_ajax_woohsn_suggest_hsn', array($this, 'ajax_suggest_hsn'));
+        add_action('wp_ajax_woohsn_get_hsn_info', array($this, 'ajax_get_hsn_info'));
     }
     
     /**
@@ -30,8 +31,8 @@ class WooHSN_Pro_Product {
      */
     public function add_meta_box() {
         add_meta_box(
-            'woohsn-pro-meta-box',
-            __('HSN Code Information', 'woohsn-pro'),
+            'woohsn-meta-box',
+            __('HSN Code Information', 'woohsn'),
             array($this, 'meta_box_callback'),
             'product',
             'side',
@@ -43,65 +44,65 @@ class WooHSN_Pro_Product {
      * Meta box callback
      */
     public function meta_box_callback($post) {
-        wp_nonce_field(basename(__FILE__), 'woohsn_pro_nonce');
+        wp_nonce_field(basename(__FILE__), 'woohsn_nonce');
         
-        $hsn_code = get_post_meta($post->ID, 'woohsn_pro_code', true);
-        $custom_gst_rate = get_post_meta($post->ID, 'woohsn_pro_custom_gst_rate', true);
-        $enable_custom_gst = get_post_meta($post->ID, 'woohsn_pro_enable_custom_gst', true);
+        $hsn_code = get_post_meta($post->ID, 'woohsn_code', true);
+        $custom_gst_rate = get_post_meta($post->ID, 'woohsn_custom_gst_rate', true);
+        $enable_custom_gst = get_post_meta($post->ID, 'woohsn_enable_custom_gst', true);
         
         ?>
-        <div class="woohsn-pro-meta-box">
+        <div class="woohsn-meta-box">
             <p>
-                <label for="woohsn_pro_code"><strong><?php _e('HSN Code:', 'woohsn-pro'); ?></strong></label>
-                <input type="text" id="woohsn_pro_code" name="woohsn_pro_code" value="<?php echo esc_attr($hsn_code); ?>" 
-                       class="widefat" placeholder="<?php _e('Enter HSN code', 'woohsn-pro'); ?>" />
-                <button type="button" id="woohsn-pro-suggest-btn" class="button button-small">
-                    <?php _e('Suggest', 'woohsn-pro'); ?>
+                <label for="woohsn_code"><strong><?php esc_html_e('HSN Code:', 'woohsn'); ?></strong></label>
+                <input type="text" id="woohsn_code" name="woohsn_code" value="<?php echo esc_attr($hsn_code); ?>" 
+                       class="widefat" placeholder="<?php esc_attr_e('Enter HSN code', 'woohsn'); ?>" />
+                <button type="button" id="woohsn-suggest-btn" class="button button-small">
+                    <?php esc_html_e('Suggest', 'woohsn'); ?>
                 </button>
             </p>
             
-            <div id="woohsn-pro-suggestions" style="display: none;">
-                <p><strong><?php _e('Suggested HSN Codes:', 'woohsn-pro'); ?></strong></p>
-                <div id="woohsn-pro-suggestions-list"></div>
+            <div id="woohsn-suggestions" style="display: none;">
+                <p><strong><?php esc_html_e('Suggested HSN Codes:', 'woohsn'); ?></strong></p>
+                <div id="woohsn-suggestions-list"></div>
             </div>
             
             <p>
                 <label>
-                    <input type="checkbox" id="woohsn_pro_enable_custom_gst" name="woohsn_pro_enable_custom_gst" 
+                    <input type="checkbox" id="woohsn_enable_custom_gst" name="woohsn_enable_custom_gst" 
                            value="yes" <?php checked($enable_custom_gst, 'yes'); ?> />
-                    <?php _e('Use custom GST rate', 'woohsn-pro'); ?>
+                    <?php esc_html_e('Use custom GST rate', 'woohsn'); ?>
                 </label>
             </p>
             
-            <p id="woohsn-pro-custom-gst-field" style="<?php echo $enable_custom_gst !== 'yes' ? 'display: none;' : ''; ?>">
-                <label for="woohsn_pro_custom_gst_rate"><strong><?php _e('Custom GST Rate (%):', 'woohsn-pro'); ?></strong></label>
-                <input type="number" id="woohsn_pro_custom_gst_rate" name="woohsn_pro_custom_gst_rate" 
+            <p id="woohsn-custom-gst-field" style="<?php echo $enable_custom_gst !== 'yes' ? 'display: none;' : ''; ?>">
+                <label for="woohsn_custom_gst_rate"><strong><?php esc_html_e('Custom GST Rate (%):', 'woohsn'); ?></strong></label>
+                <input type="number" id="woohsn_custom_gst_rate" name="woohsn_custom_gst_rate" 
                        value="<?php echo esc_attr($custom_gst_rate); ?>" step="0.01" min="0" max="100" class="widefat" />
             </p>
             
-            <div id="woohsn-pro-hsn-info" style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 4px; display: none;">
-                <p><strong><?php _e('HSN Information:', 'woohsn-pro'); ?></strong></p>
-                <div id="woohsn-pro-hsn-description"></div>
-                <div id="woohsn-pro-hsn-gst-rate"></div>
+            <div id="woohsn-hsn-info" style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 4px; display: none;">
+                <p><strong><?php esc_html_e('HSN Information:', 'woohsn'); ?></strong></p>
+                <div id="woohsn-hsn-description"></div>
+                <div id="woohsn-hsn-gst-rate"></div>
             </div>
         </div>
         
         <script type="text/javascript">
         jQuery(document).ready(function($) {
             // Toggle custom GST field
-            $('#woohsn_pro_enable_custom_gst').change(function() {
+            $('#woohsn_enable_custom_gst').change(function() {
                 if ($(this).is(':checked')) {
-                    $('#woohsn-pro-custom-gst-field').show();
+                    $('#woohsn-custom-gst-field').show();
                 } else {
-                    $('#woohsn-pro-custom-gst-field').hide();
+                    $('#woohsn-custom-gst-field').hide();
                 }
             });
             
             // Suggest HSN codes
-            $('#woohsn-pro-suggest-btn').click(function() {
+            $('#woohsn-suggest-btn').click(function() {
                 var productTitle = $('#title').val();
                 if (!productTitle) {
-                    alert('<?php _e('Please enter a product title first.', 'woohsn-pro'); ?>');
+                    alert('<?php esc_js_e('Please enter a product title first.', 'woohsn'); ?>');
                     return;
                 }
                 
@@ -109,9 +110,9 @@ class WooHSN_Pro_Product {
                     url: ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'woohsn_pro_suggest_hsn',
+                        action: 'woohsn_suggest_hsn',
                         product_title: productTitle,
-                        nonce: '<?php echo wp_create_nonce('woohsn_pro_nonce'); ?>'
+                        nonce: '<?php echo wp_create_nonce('woohsn_nonce'); ?>'
                     },
                     success: function(response) {
                         if (response.success) {
@@ -119,7 +120,7 @@ class WooHSN_Pro_Product {
                             var html = '';
                             
                             suggestions.forEach(function(item) {
-                                html += '<div class="woohsn-pro-suggestion" style="margin: 5px 0; padding: 8px; border: 1px solid #ddd; cursor: pointer;">';
+                                html += '<div class="woohsn-suggestion" style="margin: 5px 0; padding: 8px; border: 1px solid #ddd; cursor: pointer;">';
                                 html += '<strong>' + item.hsn_code + '</strong> - ' + item.description;
                                 if (item.gst_rate) {
                                     html += ' (GST: ' + item.gst_rate + '%)';
@@ -127,14 +128,14 @@ class WooHSN_Pro_Product {
                                 html += '</div>';
                             });
                             
-                            $('#woohsn-pro-suggestions-list').html(html);
-                            $('#woohsn-pro-suggestions').show();
+                            $('#woohsn-suggestions-list').html(html);
+                            $('#woohsn-suggestions').show();
                             
                             // Handle suggestion clicks
-                            $('.woohsn-pro-suggestion').click(function() {
+                            $('.woohsn-suggestion').click(function() {
                                 var hsnCode = $(this).find('strong').text();
-                                $('#woohsn_pro_code').val(hsnCode);
-                                $('#woohsn-pro-suggestions').hide();
+                                $('#woohsn_code').val(hsnCode);
+                                $('#woohsn-suggestions').hide();
                                 loadHsnInfo(hsnCode);
                             });
                         }
@@ -143,7 +144,7 @@ class WooHSN_Pro_Product {
             });
             
             // Load HSN info when code is entered
-            $('#woohsn_pro_code').blur(function() {
+            $('#woohsn_code').blur(function() {
                 var hsnCode = $(this).val();
                 if (hsnCode) {
                     loadHsnInfo(hsnCode);
@@ -155,18 +156,18 @@ class WooHSN_Pro_Product {
                     url: ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'woohsn_pro_get_hsn_info',
+                        action: 'woohsn_get_hsn_info',
                         hsn_code: hsnCode,
-                        nonce: '<?php echo wp_create_nonce('woohsn_pro_nonce'); ?>'
+                        nonce: '<?php echo wp_create_nonce('woohsn_nonce'); ?>'
                     },
                     success: function(response) {
                         if (response.success && response.data) {
                             var info = response.data;
-                            $('#woohsn-pro-hsn-description').html('<strong><?php _e('Description:', 'woohsn-pro'); ?></strong> ' + info.description);
-                            $('#woohsn-pro-hsn-gst-rate').html('<strong><?php _e('GST Rate:', 'woohsn-pro'); ?></strong> ' + info.gst_rate + '%');
-                            $('#woohsn-pro-hsn-info').show();
+                            $('#woohsn-hsn-description').html('<strong><?php esc_js_e('Description:', 'woohsn'); ?></strong> ' + info.description);
+                            $('#woohsn-hsn-gst-rate').html('<strong><?php esc_js_e('GST Rate:', 'woohsn'); ?></strong> ' + info.gst_rate + '%');
+                            $('#woohsn-hsn-info').show();
                         } else {
-                            $('#woohsn-pro-hsn-info').hide();
+                            $('#woohsn-hsn-info').hide();
                         }
                     }
                 });
@@ -180,7 +181,7 @@ class WooHSN_Pro_Product {
      * Save meta box data
      */
     public function save_meta_box_data($post_id) {
-        if (!isset($_POST['woohsn_pro_nonce']) || !wp_verify_nonce($_POST['woohsn_pro_nonce'], basename(__FILE__))) {
+        if (!isset($_POST['woohsn_nonce']) || !wp_verify_nonce($_POST['woohsn_nonce'], basename(__FILE__))) {
             return;
         }
         
@@ -192,20 +193,20 @@ class WooHSN_Pro_Product {
             return;
         }
         
-        if (isset($_POST['woohsn_pro_code'])) {
-            $hsn_code = sanitize_text_field($_POST['woohsn_pro_code']);
-            update_post_meta($post_id, 'woohsn_pro_code', $hsn_code);
+        if (isset($_POST['woohsn_code'])) {
+            $hsn_code = sanitize_text_field($_POST['woohsn_code']);
+            update_post_meta($post_id, 'woohsn_code', $hsn_code);
         }
         
-        if (isset($_POST['woohsn_pro_enable_custom_gst'])) {
-            update_post_meta($post_id, 'woohsn_pro_enable_custom_gst', 'yes');
+        if (isset($_POST['woohsn_enable_custom_gst'])) {
+            update_post_meta($post_id, 'woohsn_enable_custom_gst', 'yes');
         } else {
-            delete_post_meta($post_id, 'woohsn_pro_enable_custom_gst');
+            delete_post_meta($post_id, 'woohsn_enable_custom_gst');
         }
         
-        if (isset($_POST['woohsn_pro_custom_gst_rate'])) {
-            $custom_gst_rate = floatval($_POST['woohsn_pro_custom_gst_rate']);
-            update_post_meta($post_id, 'woohsn_pro_custom_gst_rate', $custom_gst_rate);
+        if (isset($_POST['woohsn_custom_gst_rate'])) {
+            $custom_gst_rate = floatval($_POST['woohsn_custom_gst_rate']);
+            update_post_meta($post_id, 'woohsn_custom_gst_rate', $custom_gst_rate);
         }
     }
     
@@ -215,16 +216,16 @@ class WooHSN_Pro_Product {
     public function add_product_options() {
         global $post;
         
-        $hsn_code = get_post_meta($post->ID, 'woohsn_pro_code', true);
+        $hsn_code = get_post_meta($post->ID, 'woohsn_code', true);
         
         echo '<div class="options_group">';
         
         woocommerce_wp_text_input(array(
-            'id' => 'woohsn_pro_code_general',
-            'label' => __('HSN Code', 'woohsn-pro'),
-            'placeholder' => __('Enter HSN code', 'woohsn-pro'),
+            'id' => 'woohsn_code_general',
+            'label' => __('HSN Code', 'woohsn'),
+            'placeholder' => __('Enter HSN code', 'woohsn'),
             'desc_tip' => true,
-            'description' => __('Harmonized System of Nomenclature code for this product.', 'woohsn-pro'),
+            'description' => __('Harmonized System of Nomenclature code for this product.', 'woohsn'),
             'value' => $hsn_code
         ));
         
@@ -235,9 +236,9 @@ class WooHSN_Pro_Product {
      * Save product options
      */
     public function save_product_options($post_id) {
-        if (isset($_POST['woohsn_pro_code_general'])) {
-            $hsn_code = sanitize_text_field($_POST['woohsn_pro_code_general']);
-            update_post_meta($post_id, 'woohsn_pro_code', $hsn_code);
+        if (isset($_POST['woohsn_code_general'])) {
+            $hsn_code = sanitize_text_field($_POST['woohsn_code_general']);
+            update_post_meta($post_id, 'woohsn_code', $hsn_code);
         }
     }
     
@@ -251,7 +252,7 @@ class WooHSN_Pro_Product {
             $new_columns[$key] = $value;
             
             if ($key === 'price') {
-                $new_columns['woohsn_pro_code'] = __('HSN Code', 'woohsn-pro');
+                $new_columns['woohsn_code'] = __('HSN Code', 'woohsn');
             }
         }
         
@@ -262,13 +263,13 @@ class WooHSN_Pro_Product {
      * Display HSN code in products list column
      */
     public function display_product_column($column, $post_id) {
-        if ($column === 'woohsn_pro_code') {
-            $hsn_code = get_post_meta($post_id, 'woohsn_pro_code', true);
+        if ($column === 'woohsn_code') {
+            $hsn_code = get_post_meta($post_id, 'woohsn_code', true);
             
             if (!empty($hsn_code)) {
-                echo '<span class="woohsn-pro-code-display">' . esc_html($hsn_code) . '</span>';
+                echo '<span class="woohsn-code-display">' . esc_html($hsn_code) . '</span>';
             } else {
-                echo '<span class="woohsn-pro-no-code" style="color: #999;">—</span>';
+                echo '<span class="woohsn-no-code" style="color: #999;">—</span>';
             }
         }
     }
@@ -277,7 +278,7 @@ class WooHSN_Pro_Product {
      * Make HSN code column sortable
      */
     public function make_product_column_sortable($columns) {
-        $columns['woohsn_pro_code'] = 'woohsn_pro_code';
+        $columns['woohsn_code'] = 'woohsn_code';
         return $columns;
     }
     
@@ -289,8 +290,8 @@ class WooHSN_Pro_Product {
             return;
         }
         
-        if ($query->get('orderby') === 'woohsn_pro_code') {
-            $query->set('meta_key', 'woohsn_pro_code');
+        if ($query->get('orderby') === 'woohsn_code') {
+            $query->set('meta_key', 'woohsn_code');
             $query->set('orderby', 'meta_value');
         }
     }
@@ -299,7 +300,7 @@ class WooHSN_Pro_Product {
      * AJAX suggest HSN codes based on product title
      */
     public function ajax_suggest_hsn() {
-        check_ajax_referer('woohsn_pro_nonce', 'nonce');
+        check_ajax_referer('woohsn_nonce', 'nonce');
         
         $product_title = sanitize_text_field($_POST['product_title']);
         
@@ -312,7 +313,7 @@ class WooHSN_Pro_Product {
         foreach ($keywords as $keyword) {
             if (strlen($keyword) > 2) {
                 $results = $wpdb->get_results($wpdb->prepare(
-                    "SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_pro_codes 
+                    "SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_codes 
                      WHERE LOWER(description) LIKE %s 
                      ORDER BY hsn_code ASC LIMIT 5",
                     '%' . $wpdb->esc_like($keyword) . '%'
@@ -334,5 +335,26 @@ class WooHSN_Pro_Product {
         }
         
         wp_send_json_success(array_slice($unique_suggestions, 0, 10));
+    }
+    
+    /**
+     * AJAX get HSN code information
+     */
+    public function ajax_get_hsn_info() {
+        check_ajax_referer('woohsn_nonce', 'nonce');
+        
+        $hsn_code = sanitize_text_field($_POST['hsn_code']);
+        
+        global $wpdb;
+        $result = $wpdb->get_row($wpdb->prepare(
+            "SELECT description, gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
+            $hsn_code
+        ));
+        
+        if ($result) {
+            wp_send_json_success($result);
+        } else {
+            wp_send_json_error();
+        }
     }
 }
