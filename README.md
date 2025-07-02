@@ -1,6 +1,6 @@
-# WooHSN Pro - Professional HSN Code Management for WooCommerce
+# WooHSN - Smart HSN Tagging System for WooCommerce
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/chetanupare/woohsn-pro)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://wordpress.org/plugins/woohsn/)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg)](https://woocommerce.com)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
@@ -8,76 +8,76 @@
 
 ## 🚀 Overview
 
-WooHSN Pro is a comprehensive WordPress plugin that provides professional HSN (Harmonized System of Nomenclature) code management for WooCommerce stores. Perfect for businesses dealing with GST compliance, tax calculations, and international trade requirements.
+WooHSN is a comprehensive WordPress plugin that provides smart HSN (Harmonized System of Nomenclature) code management for WooCommerce stores. Automate GST readiness with minimal effort and simplify tax compliance for Indian businesses.
 
 ## ✨ Key Features
 
 ### 🎯 Core Functionality
-- **Advanced HSN Code Management** - Complete database of HSN codes with descriptions and GST rates
+- **Easy HSN Code Assignment** - Add HSN codes to products effortlessly through an intuitive interface
 - **Product Integration** - Seamless integration with WooCommerce products
-- **Automated Tax Calculation** - Real-time GST calculations based on HSN codes
-- **Bulk Operations** - Efficiently assign HSN codes to multiple products
-- **Smart Suggestions** - AI-powered HSN code suggestions based on product titles
+- **GST Rate Management** - Automatically calculate and display GST rates based on HSN codes
+- **Bulk Operations** - Assign HSN codes to multiple products at once using CSV import/export
+- **Smart Suggestions** - Get intelligent HSN code suggestions based on product titles and descriptions
 
 ### 📊 Data Management
+- **Database Management** - Comprehensive HSN code database with descriptions and GST rates
 - **Import/Export** - CSV-based bulk import and export functionality
-- **Database Backup** - Automated backup and restore capabilities
-- **Data Validation** - Comprehensive validation and error handling
-- **Caching System** - Optimized performance with intelligent caching
+- **Data Validation** - Built-in validation and format checking
+- **Performance Optimized** - Caching and optimized queries for better performance
 
 ### 🎨 Customization
-- **Display Options** - Flexible HSN code display on product pages
-- **Styling Controls** - Complete control over appearance and positioning
-- **Custom GST Rates** - Product-specific GST rate overrides
-- **Multiple Display Locations** - Show HSN codes on shop, cart, and order pages
+- **Frontend Display** - Show HSN codes on product pages, cart, and order details
+- **Customizable Display** - Style HSN code display to match your theme
+- **Multiple Positions** - Choose where to display HSN codes on your store
+- **Custom GST Rates** - Product-specific GST rate overrides when needed
 
-### 📈 Reporting & Analytics
-- **GST Reports** - Detailed GST breakdown and analysis
-- **HSN Analytics** - Product-wise HSN code statistics
-- **Export Reports** - Generate reports in multiple formats
-- **Dashboard Widgets** - Quick overview of HSN code completion rates
+### 📈 Reports & Analytics
+- **Dashboard Overview** - Quick statistics and completion rates
+- **HSN Analytics** - Product-wise HSN code assignment tracking
+- **Export Capabilities** - Generate reports for accounting software
+- **GST Breakdown** - Detailed GST rate analysis
 
 ## 🛠 Installation
 
-1. **Download** the plugin files
-2. **Upload** to your WordPress installation's `/wp-content/plugins/` directory
-3. **Activate** the plugin through the 'Plugins' menu in WordPress
-4. **Configure** settings via the WooHSN Pro menu in admin
+1. **Upload** the plugin files to `/wp-content/plugins/woohsn/` directory, or install through WordPress admin
+2. **Activate** the plugin through the 'Plugins' screen in WordPress
+3. **Go to WooHSN > Settings** to configure display options
+4. **Start adding HSN codes** to your products!
 
 ## ⚙️ Configuration
 
 ### Initial Setup
-1. Navigate to **WooHSN Pro > Settings**
-2. Configure display options and styling
-3. Import HSN database (included sample data)
-4. Set up tax calculation preferences
+1. Navigate to **WooHSN > Settings**
+2. Configure display options and styling preferences
+3. Choose where to show HSN codes (product pages, cart, orders)
+4. Set up GST rate display preferences
 
 ### Product Configuration
 1. Edit any WooCommerce product
 2. Find the "HSN Code Information" meta box
-3. Enter HSN code or use the suggestion feature
-4. Optionally set custom GST rates
+3. Enter HSN code or use the smart suggestion feature
+4. Optionally enable custom GST rates for specific products
 
 ## 📁 File Structure
 
 ```
-woohsn-pro/
-├── woohsn-pro.php              # Main plugin file
+woohsn/
+├── woohsn.php                  # Main plugin file
+├── readme.txt                 # WordPress.org readme
 ├── includes/                   # Core functionality
-│   ├── class-woohsn-pro-admin.php
-│   ├── class-woohsn-pro-frontend.php
-│   ├── class-woohsn-pro-product.php
-│   ├── class-woohsn-pro-import-export.php
-│   ├── class-woohsn-pro-tax-calculator.php
-│   ├── class-woohsn-pro-database.php
+│   ├── class-woohsn-admin.php
+│   ├── class-woohsn-frontend.php
+│   ├── class-woohsn-product.php
+│   ├── class-woohsn-import-export.php
+│   ├── class-woohsn-tax-calculator.php
+│   ├── class-woohsn-database.php
 │   └── functions.php
 ├── assets/                     # Static assets
 │   ├── css/
 │   │   ├── admin.css
 │   │   └── frontend.css
-│   └── js/
-│       ├── admin.js
-│       └── frontend.js
+│   ├── js/
+│   └── images/
 ├── templates/                  # Admin templates
 │   └── admin-dashboard.php
 └── languages/                  # Translation files
@@ -99,13 +99,13 @@ woohsn-pro/
 
 ### Get HSN Code Programmatically
 ```php
-$hsn_code = woohsn_pro_get_product_hsn_code($product_id);
-$gst_rate = woohsn_pro_get_gst_rate($hsn_code);
+$hsn_code = woohsn_get_product_hsn_code($product_id);
+$gst_rate = woohsn_get_gst_rate($hsn_code);
 ```
 
 ### Calculate Tax for Product
 ```php
-$tax_data = woohsn_pro_calculate_product_gst($product_id, $price, $quantity);
+$tax_data = woohsn_calculate_product_gst($product_id, $price, $quantity);
 ```
 
 ## 🎨 Customization
@@ -114,7 +114,7 @@ $tax_data = woohsn_pro_calculate_product_gst($product_id, $price, $quantity);
 The plugin provides complete CSS control:
 
 ```css
-.woohsn-pro-display {
+.woohsn-display {
     background: #f8f9fa;
     border: 1px solid #dee2e6;
     padding: 8px 12px;
@@ -131,20 +131,20 @@ Configure display format in settings:
 ## 🔌 Hooks & Filters
 
 ### Actions
-- `woohsn_pro_before_display` - Before HSN code display
-- `woohsn_pro_after_display` - After HSN code display
-- `woohsn_pro_import_complete` - After successful import
+- `woohsn_before_display` - Before HSN code display
+- `woohsn_after_display` - After HSN code display
+- `woohsn_import_complete` - After successful import
 
 ### Filters
-- `woohsn_pro_display_format` - Modify display format
-- `woohsn_pro_gst_rate` - Override GST rate calculation
-- `woohsn_pro_hsn_suggestions` - Customize HSN suggestions
+- `woohsn_display_format` - Modify display format
+- `woohsn_gst_rate` - Override GST rate calculation
+- `woohsn_hsn_suggestions` - Customize HSN suggestions
 
 ## 📊 Database Schema
 
 ### HSN Codes Table
 ```sql
-CREATE TABLE wp_woohsn_pro_codes (
+CREATE TABLE wp_woohsn_codes (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
     hsn_code varchar(20) NOT NULL,
     description text,
@@ -158,7 +158,7 @@ CREATE TABLE wp_woohsn_pro_codes (
 
 ### Logs Table
 ```sql
-CREATE TABLE wp_woohsn_pro_logs (
+CREATE TABLE wp_woohsn_logs (
     id mediumint(9) NOT NULL AUTO_INCREMENT,
     operation_type varchar(20) NOT NULL,
     file_name varchar(255),
@@ -187,48 +187,46 @@ CREATE TABLE wp_woohsn_pro_logs (
 - **Minified Assets** - Compressed CSS and JavaScript
 - **CDN Ready** - Compatible with content delivery networks
 
-## 🔄 Migration from Old Plugin
+## 🔄 Migration Support
 
-The new WooHSN Pro automatically handles migration from the previous version:
+WooHSN automatically handles data migration when upgrading:
 
 1. **Data Preservation** - All existing HSN codes are preserved
 2. **Setting Migration** - Previous settings automatically migrated
 3. **Meta Key Update** - Product meta keys updated to new format
-4. **Backup Creation** - Automatic backup before migration
+4. **Clean Migration** - No data loss during updates
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
 **HSN codes not displaying:**
-- Check display settings in WooHSN Pro > Settings
+- Check display settings in WooHSN > Settings
 - Verify HSN codes are assigned to products
 - Clear cache if using caching plugins
 
 **Import failing:**
 - Ensure CSV format matches template
-- Check file size limits (5MB max)
+- Check file permissions and size limits
 - Verify proper column headers
 
 **Performance issues:**
-- Enable caching in settings
-- Optimize database tables via dashboard
-- Check for plugin conflicts
+- Clear plugin cache and optimize database
+- Check for theme/plugin conflicts
+- Ensure WooCommerce is up to date
 
 ## 📝 Changelog
 
-### Version 2.0.0 (Current)
-- ✅ Complete plugin redesign and rewrite
-- ✅ Enhanced security and performance
-- ✅ Advanced tax calculation engine
-- ✅ Improved user interface
-- ✅ Comprehensive reporting system
-- ✅ Better WooCommerce integration
-
-### Version 1.0.0 (Legacy)
-- Basic HSN code functionality
-- Simple import/export
-- Basic styling options
+### Version 1.0.0 (Current)
+- ✅ Initial WordPress.org release
+- ✅ HSN code assignment for products
+- ✅ Bulk import/export functionality
+- ✅ Smart HSN code suggestions
+- ✅ GST rate management
+- ✅ Frontend display options
+- ✅ Comprehensive admin dashboard
+- ✅ Reports and analytics
+- ✅ WordPress.org compliance
 
 ## 🤝 Contributing
 
@@ -246,18 +244,18 @@ This project is licensed under the GPL v2 or later - see the [LICENSE](LICENSE) 
 
 ## 🆘 Support
 
-- **Documentation:** [GitHub Wiki](https://github.com/chetanupare/woohsn-pro/wiki)
-- **Support Forum:** [WordPress.org Support](https://wordpress.org/support/plugin/woohsn-pro/)
-- **Bug Reports:** [GitHub Issues](https://github.com/chetanupare/woohsn-pro/issues)
-- **Feature Requests:** [GitHub Discussions](https://github.com/chetanupare/woohsn-pro/discussions)
+- **Documentation:** Available in plugin dashboard
+- **Support Forum:** [WordPress.org Support](https://wordpress.org/support/plugin/woohsn/)
+- **Bug Reports:** [GitHub Issues](https://github.com/chetanupare/woohsn/issues)
+- **Feature Requests:** [GitHub Discussions](https://github.com/chetanupare/woohsn/discussions)
 
 ## 🏆 Credits
 
 - **Author & Developer:** [Chetan Upare](https://github.com/chetanupare)
 - **HSN Database:** Government of India Classification
 - **Icons:** WordPress Dashicons
-- **Testing:** WooCommerce Community
+- **Testing:** WordPress & WooCommerce Community
 
 ---
 
-**Made with ❤️ for the WordPress & WooCommerce community**
+**Made with ❤️ for Indian businesses using WordPress & WooCommerce**
