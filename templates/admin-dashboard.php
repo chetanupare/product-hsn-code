@@ -9,14 +9,14 @@ if (!defined('ABSPATH')) {
 }
 
 // Get statistics
-$database = new WooHSN_Pro_Database();
+$database = new WooHSN_Database();
 $stats = $database->get_hsn_statistics();
 ?>
 
 <div class="wrap woohsn-pro-admin">
-    <div class="woohsn-pro-admin-header">
-        <h1><?php _e('WooHSN Pro Dashboard', 'woohsn-pro'); ?></h1>
-        <p><?php _e('Professional HSN code management for WooCommerce', 'woohsn-pro'); ?></p>
+    <div class="woohsn-admin-header">
+        <h1><?php esc_html_e('WooHSN Dashboard', 'woohsn'); ?></h1>
+        <p><?php esc_html_e('Smart HSN tagging system for WooCommerce stores. Automate GST readiness with minimal effort.', 'woohsn'); ?></p>
     </div>
     
     <div class="woohsn-pro-dashboard-stats">

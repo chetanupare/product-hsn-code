@@ -1,6 +1,6 @@
 <?php
 /**
- * Frontend functionality for WooHSN Pro
+ * Frontend functionality for WooHSN
  */
 
 // Prevent direct access
@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class WooHSN_Pro_Frontend {
+class WooHSN_Frontend {
     
     /**
      * Constructor
@@ -27,8 +27,8 @@ class WooHSN_Pro_Frontend {
      */
     public function enqueue_frontend_scripts() {
         if (is_product() || is_shop() || is_product_category() || is_cart() || is_checkout()) {
-            wp_enqueue_style('woohsn-pro-frontend-css', WOOHSN_PRO_PLUGIN_URL . 'assets/css/frontend.css', array(), WOOHSN_PRO_VERSION);
-            wp_enqueue_script('woohsn-pro-frontend-js', WOOHSN_PRO_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), WOOHSN_PRO_VERSION, true);
+            wp_enqueue_style('woohsn-frontend-css', WOOHSN_PLUGIN_URL . 'assets/css/frontend.css', array(), WOOHSN_VERSION);
+            wp_enqueue_script('woohsn-frontend-js', WOOHSN_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), WOOHSN_VERSION, true);
         }
     }
     
@@ -42,14 +42,14 @@ class WooHSN_Pro_Frontend {
             return;
         }
         
-        $hsn_code = get_post_meta($product->get_id(), 'woohsn_pro_code', true);
+        $hsn_code = get_post_meta($product->get_id(), 'woohsn_code', true);
         
         if (empty($hsn_code)) {
             return;
         }
         
-        $display_format = get_option('woohsn_pro_display_format', 'HSN Code: {code}');
-        $show_gst_rate = get_option('woohsn_pro_show_gst_rate', 'yes');
+        $display_format = get_option('woohsn_display_format', 'HSN Code: {code}');
+        $show_gst_rate = get_option('woohsn_show_gst_rate', 'yes');
         
         // Get GST rate if enabled
         $gst_rate = '';
@@ -60,7 +60,7 @@ class WooHSN_Pro_Frontend {
         $output = str_replace('{code}', $hsn_code, $display_format);
         
         if (!empty($gst_rate) && $show_gst_rate === 'yes') {
-            $output .= ' <span class="woohsn-pro-gst-rate">(GST: ' . $gst_rate . '%)</span>';
+            $output .= ' <span class="woohsn-gst-rate">(GST: ' . $gst_rate . '%)</span>';
         }
         
         $this->render_hsn_display($output, 'single-product');
@@ -76,13 +76,13 @@ class WooHSN_Pro_Frontend {
             return;
         }
         
-        $display_in_shop = get_option('woohsn_pro_display_in_shop', 'no');
+        $display_in_shop = get_option('woohsn_display_in_shop', 'no');
         
         if ($display_in_shop !== 'yes') {
             return;
         }
         
-        $hsn_code = get_post_meta($product->get_id(), 'woohsn_pro_code', true);
+        $hsn_code = get_post_meta($product->get_id(), 'woohsn_code', true);
         
         if (empty($hsn_code)) {
             return;
@@ -96,17 +96,17 @@ class WooHSN_Pro_Frontend {
      * Add HSN code to cart item name
      */
     public function add_hsn_to_cart($product_name, $cart_item, $cart_item_key) {
-        $show_in_cart = get_option('woohsn_pro_display_in_cart', 'no');
+        $show_in_cart = get_option('woohsn_display_in_cart', 'no');
         
         if ($show_in_cart !== 'yes') {
             return $product_name;
         }
         
         $product_id = $cart_item['product_id'];
-        $hsn_code = get_post_meta($product_id, 'woohsn_pro_code', true);
+        $hsn_code = get_post_meta($product_id, 'woohsn_code', true);
         
         if (!empty($hsn_code)) {
-            $product_name .= '<br><small class="woohsn-pro-cart-hsn">HSN: ' . esc_html($hsn_code) . '</small>';
+            $product_name .= '<br><small class="woohsn-cart-hsn">HSN: ' . esc_html($hsn_code) . '</small>';
         }
         
         return $product_name;
@@ -116,20 +116,20 @@ class WooHSN_Pro_Frontend {
      * Display HSN code in order details
      */
     public function display_hsn_in_order($item_id, $item, $order, $plain_text) {
-        $show_in_order = get_option('woohsn_pro_display_in_order', 'yes');
+        $show_in_order = get_option('woohsn_display_in_order', 'yes');
         
         if ($show_in_order !== 'yes') {
             return;
         }
         
         $product_id = $item->get_product_id();
-        $hsn_code = get_post_meta($product_id, 'woohsn_pro_code', true);
+        $hsn_code = get_post_meta($product_id, 'woohsn_code', true);
         
         if (!empty($hsn_code)) {
             if ($plain_text) {
                 echo "\nHSN Code: " . $hsn_code;
             } else {
-                echo '<div class="woohsn-pro-order-hsn"><strong>HSN Code:</strong> ' . esc_html($hsn_code) . '</div>';
+                echo '<div class="woohsn-order-hsn"><strong>HSN Code:</strong> ' . esc_html($hsn_code) . '</div>';
             }
         }
     }
@@ -145,7 +145,7 @@ class WooHSN_Pro_Frontend {
         ), $atts, 'woohsn_code');
         
         $product_id = intval($atts['product_id']);
-        $hsn_code = get_post_meta($product_id, 'woohsn_pro_code', true);
+        $hsn_code = get_post_meta($product_id, 'woohsn_code', true);
         
         if (empty($hsn_code)) {
             return '';
@@ -160,7 +160,7 @@ class WooHSN_Pro_Frontend {
             }
         }
         
-        return '<span class="woohsn-pro-shortcode">' . esc_html($output) . '</span>';
+        return '<span class="woohsn-shortcode">' . esc_html($output) . '</span>';
     }
     
     /**
@@ -169,16 +169,16 @@ class WooHSN_Pro_Frontend {
     private function get_gst_rate_for_hsn($hsn_code) {
         global $wpdb;
         
-        $cache_key = 'woohsn_pro_gst_rate_' . $hsn_code;
+        $cache_key = 'woohsn_gst_rate_' . $hsn_code;
         $gst_rate = get_transient($cache_key);
         
         if ($gst_rate === false) {
             $gst_rate = $wpdb->get_var($wpdb->prepare(
-                "SELECT gst_rate FROM {$wpdb->prefix}woohsn_pro_codes WHERE hsn_code = %s",
+                "SELECT gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
                 $hsn_code
             ));
             
-            $cache_duration = get_option('woohsn_pro_cache_duration', 3600);
+            $cache_duration = get_option('woohsn_cache_duration', 3600);
             set_transient($cache_key, $gst_rate, $cache_duration);
         }
         
@@ -189,11 +189,11 @@ class WooHSN_Pro_Frontend {
      * Render HSN display with custom styling
      */
     private function render_hsn_display($content, $context = 'single-product') {
-        $color = get_option('woohsn_pro_color', '#333333');
-        $font_size = get_option('woohsn_pro_font_size', '14');
-        $font_weight = get_option('woohsn_pro_font_weight', 'normal');
-        $background_color = get_option('woohsn_pro_background_color', '#f8f9fa');
-        $border_color = get_option('woohsn_pro_border_color', '#dee2e6');
+        $color = get_option('woohsn_color', '#333333');
+        $font_size = get_option('woohsn_font_size', '14');
+        $font_weight = get_option('woohsn_font_weight', 'normal');
+        $background_color = get_option('woohsn_background_color', '#f8f9fa');
+        $border_color = get_option('woohsn_border_color', '#dee2e6');
         
         $styles = array(
             'color: ' . esc_attr($color),
@@ -209,7 +209,7 @@ class WooHSN_Pro_Frontend {
         
         $style_string = implode('; ', $styles);
         
-        echo '<div class="woohsn-pro-display woohsn-pro-' . esc_attr($context) . '" style="' . $style_string . '">';
+        echo '<div class="woohsn-display woohsn-' . esc_attr($context) . '" style="' . $style_string . '">';
         echo wp_kses_post($content);
         echo '</div>';
     }

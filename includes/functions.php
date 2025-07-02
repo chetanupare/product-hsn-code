@@ -1,6 +1,6 @@
 <?php
 /**
- * Helper functions for WooHSN Pro
+ * Helper functions for WooHSN
  */
 
 // Prevent direct access
@@ -11,27 +11,27 @@ if (!defined('ABSPATH')) {
 /**
  * Get HSN code for product
  */
-function woohsn_pro_get_product_hsn_code($product_id) {
-    return get_post_meta($product_id, 'woohsn_pro_code', true);
+function woohsn_get_product_hsn_code($product_id) {
+    return get_post_meta($product_id, 'woohsn_code', true);
 }
 
 /**
  * Get GST rate for HSN code
  */
-function woohsn_pro_get_gst_rate($hsn_code) {
+function woohsn_get_gst_rate($hsn_code) {
     global $wpdb;
     
-    $cache_key = 'woohsn_pro_gst_rate_' . $hsn_code;
+    $cache_key = 'woohsn_gst_rate_' . $hsn_code;
     $gst_rate = get_transient($cache_key);
     
     if ($gst_rate === false) {
         $gst_rate = $wpdb->get_var($wpdb->prepare(
-            "SELECT gst_rate FROM {$wpdb->prefix}woohsn_pro_codes WHERE hsn_code = %s",
+            "SELECT gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
             $hsn_code
         ));
         
         $gst_rate = $gst_rate ? floatval($gst_rate) : 0;
-        $cache_duration = get_option('woohsn_pro_cache_duration', 3600);
+        $cache_duration = get_option('woohsn_cache_duration', 3600);
         set_transient($cache_key, $gst_rate, $cache_duration);
     }
     
@@ -41,13 +41,13 @@ function woohsn_pro_get_gst_rate($hsn_code) {
 /**
  * Format HSN code display
  */
-function woohsn_pro_format_hsn_display($hsn_code, $format = null) {
+function woohsn_format_hsn_display($hsn_code, $format = null) {
     if (empty($hsn_code)) {
         return '';
     }
     
     if (!$format) {
-        $format = get_option('woohsn_pro_display_format', 'HSN Code: {code}');
+        $format = get_option('woohsn_display_format', 'HSN Code: {code}');
     }
     
     return str_replace('{code}', $hsn_code, $format);
@@ -56,14 +56,14 @@ function woohsn_pro_format_hsn_display($hsn_code, $format = null) {
 /**
  * Get product GST calculation
  */
-function woohsn_pro_calculate_product_gst($product_id, $price = null, $quantity = 1) {
+function woohsn_calculate_product_gst($product_id, $price = null, $quantity = 1) {
     if (!$price) {
         $product = wc_get_product($product_id);
         $price = $product ? $product->get_price() : 0;
     }
     
-    $hsn_code = woohsn_pro_get_product_hsn_code($product_id);
-    $gst_rate = woohsn_pro_get_gst_rate($hsn_code);
+    $hsn_code = woohsn_get_product_hsn_code($product_id);
+    $gst_rate = woohsn_get_gst_rate($hsn_code);
     
     $subtotal = $price * $quantity;
     $gst_amount = ($subtotal * $gst_rate) / 100;
@@ -81,11 +81,11 @@ function woohsn_pro_calculate_product_gst($product_id, $price = null, $quantity 
 /**
  * Check if HSN code exists in database
  */
-function woohsn_pro_hsn_code_exists($hsn_code) {
+function woohsn_hsn_code_exists($hsn_code) {
     global $wpdb;
     
     $exists = $wpdb->get_var($wpdb->prepare(
-        "SELECT id FROM {$wpdb->prefix}woohsn_pro_codes WHERE hsn_code = %s",
+        "SELECT id FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
         $hsn_code
     ));
     
@@ -95,11 +95,11 @@ function woohsn_pro_hsn_code_exists($hsn_code) {
 /**
  * Get HSN code description
  */
-function woohsn_pro_get_hsn_description($hsn_code) {
+function woohsn_get_hsn_description($hsn_code) {
     global $wpdb;
     
     return $wpdb->get_var($wpdb->prepare(
-        "SELECT description FROM {$wpdb->prefix}woohsn_pro_codes WHERE hsn_code = %s",
+        "SELECT description FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
         $hsn_code
     ));
 }
@@ -107,7 +107,7 @@ function woohsn_pro_get_hsn_description($hsn_code) {
 /**
  * Validate HSN code format
  */
-function woohsn_pro_validate_hsn_code($hsn_code) {
+function woohsn_validate_hsn_code($hsn_code) {
     // HSN codes are typically 4-8 digit numbers
     return preg_match('/^[0-9]{4,8}$/', $hsn_code);
 }
@@ -115,33 +115,33 @@ function woohsn_pro_validate_hsn_code($hsn_code) {
 /**
  * Log plugin activity
  */
-function woohsn_pro_log_activity($message, $level = 'info') {
+function woohsn_log_activity($message, $level = 'info') {
     if (defined('WP_DEBUG') && WP_DEBUG) {
-        error_log('[WooHSN Pro] ' . $message);
+        error_log('[WooHSN] ' . $message);
     }
 }
 
 /**
  * Get plugin version
  */
-function woohsn_pro_get_version() {
-    return WOOHSN_PRO_VERSION;
+function woohsn_get_version() {
+    return WOOHSN_VERSION;
 }
 
 /**
  * Check if WooCommerce is active
  */
-function woohsn_pro_is_woocommerce_active() {
+function woohsn_is_woocommerce_active() {
     return class_exists('WooCommerce');
 }
 
 /**
  * Get all GST rates
  */
-function woohsn_pro_get_all_gst_rates() {
+function woohsn_get_all_gst_rates() {
     global $wpdb;
     
-    $rates = $wpdb->get_col("SELECT DISTINCT gst_rate FROM {$wpdb->prefix}woohsn_pro_codes ORDER BY gst_rate ASC");
+    $rates = $wpdb->get_col("SELECT DISTINCT gst_rate FROM {$wpdb->prefix}woohsn_codes ORDER BY gst_rate ASC");
     
     return array_map('floatval', $rates);
 }

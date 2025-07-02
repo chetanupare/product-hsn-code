@@ -1,3 +1,67 @@
+/* WooHSN Frontend Styles */
+
+.woohsn-display {
+    margin: 10px 0;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.woohsn-single-product {
+    margin: 15px 0;
+}
+
+.woohsn-shop-loop {
+    margin: 5px 0;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+.woohsn-cart-hsn {
+    color: #666;
+    font-size: 11px;
+}
+
+.woohsn-order-hsn {
+    margin: 5px 0;
+    color: #666;
+    font-size: 12px;
+}
+
+.woohsn-gst-rate {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.woohsn-shortcode {
+    display: inline-block;
+}
+
+.woohsn-code-display {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.woohsn-no-code {
+    color: #999;
+    font-style: italic;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .woohsn-display {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .woohsn-single-product {
+        margin: 10px 0;
+    }
+}
+
 /* WooHSN Pro Frontend Styles */
 
 .woohsn-pro-display {
