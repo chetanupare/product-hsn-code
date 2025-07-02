@@ -1,0 +1,57 @@
+{
+    "name": "chetanupare/woohsn-pro",
+    "description": "Professional HSN (Harmonized System of Nomenclature) code management for WooCommerce with advanced features, bulk operations, and tax calculations.",
+    "type": "wordpress-plugin",
+    "keywords": [
+        "wordpress",
+        "woocommerce",
+        "hsn",
+        "gst",
+        "tax",
+        "india",
+        "ecommerce",
+        "nomenclature"
+    ],
+    "homepage": "https://github.com/chetanupare/woohsn-pro",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Chetan Upare",
+            "email": "chetan@example.com",
+            "homepage": "https://github.com/chetanupare",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/chetanupare/woohsn-pro/issues",
+        "source": "https://github.com/chetanupare/woohsn-pro",
+        "docs": "https://github.com/chetanupare/woohsn-pro/wiki"
+    },
+    "require": {
+        "php": ">=7.4",
+        "composer/installers": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0",
+        "wp-coding-standards/wpcs": "*",
+        "phpcompatibility/phpcompatibility-wp": "*"
+    },
+    "extra": {
+        "installer-name": "woohsn-pro"
+    },
+    "autoload": {
+        "classmap": [
+            "includes/"
+        ]
+    },
+    "scripts": {
+        "phpcs": "phpcs --standard=WordPress .",
+        "phpcbf": "phpcbf --standard=WordPress .",
+        "test": "phpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    }
+}
