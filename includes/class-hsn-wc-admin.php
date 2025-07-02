@@ -1,6 +1,6 @@
 <?php
 /**
- * Admin functionality for WooHSN Pro
+ * Admin functionality for HSN for WooCommerce
  */
 
 // Prevent direct access
@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class WooHSN_Pro_Admin {
+class HSN_WC_Admin {
     
     /**
      * Constructor

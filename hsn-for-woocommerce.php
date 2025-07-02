@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name: WooHSN Pro
- * Plugin URI: https://github.com/chetanupare/woohsn-pro
- * Description: Professional HSN (Harmonized System of Nomenclature) code management for WooCommerce with advanced features, bulk operations, and tax calculations.
- * Version: 2.0.0
+ * Plugin Name: HSN for WooCommerce
+ * Plugin URI: https://wordpress.org/plugins/hsn-for-woocommerce/
+ * Description: Complete HSN (Harmonized System of Nomenclature) code management for WooCommerce with bulk operations, tax calculations, and GST compliance for Indian businesses.
+ * Version: 1.0.0
  * Author: Chetan Upare
  * Author URI: https://github.com/chetanupare
- * Text Domain: woohsn-pro
+ * Text Domain: hsn-for-woocommerce
  * Domain Path: /languages
  * Requires at least: 5.0
  * Tested up to: 6.4
@@ -15,6 +15,7 @@
  * WC tested up to: 8.5
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Network: false
  */
 
 // Prevent direct access
@@ -23,33 +24,33 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('WOOHSN_PRO_VERSION', '2.0.0');
-define('WOOHSN_PRO_PLUGIN_FILE', __FILE__);
-define('WOOHSN_PRO_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('WOOHSN_PRO_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('WOOHSN_PRO_PLUGIN_BASENAME', plugin_basename(__FILE__));
+define('HSN_WC_VERSION', '1.0.0');
+define('HSN_WC_PLUGIN_FILE', __FILE__);
+define('HSN_WC_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('HSN_WC_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('HSN_WC_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
 // Check if WooCommerce is active
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-    add_action('admin_notices', 'woohsn_pro_woocommerce_missing_notice');
+    add_action('admin_notices', 'hsn_wc_woocommerce_missing_notice');
     return;
 }
 
 /**
  * WooCommerce missing notice
  */
-function woohsn_pro_woocommerce_missing_notice() {
+function hsn_wc_woocommerce_missing_notice() {
     ?>
     <div class="notice notice-error">
-        <p><?php _e('WooHSN Pro requires WooCommerce to be installed and active.', 'woohsn-pro'); ?></p>
+        <p><?php _e('HSN for WooCommerce requires WooCommerce to be installed and active.', 'hsn-for-woocommerce'); ?></p>
     </div>
     <?php
 }
 
 /**
- * Main WooHSN Pro Class
+ * Main HSN for WooCommerce Class
  */
-class WooHSN_Pro {
+class HSN_For_WooCommerce {
     
     /**
      * Single instance of the class
@@ -57,7 +58,7 @@ class WooHSN_Pro {
     protected static $_instance = null;
     
     /**
-     * Main WooHSN Pro Instance
+     * Main HSN for WooCommerce Instance
      */
     public static function instance() {
         if (is_null(self::$_instance)) {
@@ -88,26 +89,26 @@ class WooHSN_Pro {
      * Include required core files
      */
     public function includes() {
-        include_once WOOHSN_PRO_PLUGIN_DIR . 'includes/class-woohsn-pro-admin.php';
-        include_once WOOHSN_PRO_PLUGIN_DIR . 'includes/class-woohsn-pro-frontend.php';
-        include_once WOOHSN_PRO_PLUGIN_DIR . 'includes/class-woohsn-pro-product.php';
-        include_once WOOHSN_PRO_PLUGIN_DIR . 'includes/class-woohsn-pro-import-export.php';
-        include_once WOOHSN_PRO_PLUGIN_DIR . 'includes/class-woohsn-pro-tax-calculator.php';
-        include_once WOOHSN_PRO_PLUGIN_DIR . 'includes/class-woohsn-pro-database.php';
-        include_once WOOHSN_PRO_PLUGIN_DIR . 'includes/functions.php';
+        include_once HSN_WC_PLUGIN_DIR . 'includes/class-hsn-wc-admin.php';
+        include_once HSN_WC_PLUGIN_DIR . 'includes/class-hsn-wc-frontend.php';
+        include_once HSN_WC_PLUGIN_DIR . 'includes/class-hsn-wc-product.php';
+        include_once HSN_WC_PLUGIN_DIR . 'includes/class-hsn-wc-import-export.php';
+        include_once HSN_WC_PLUGIN_DIR . 'includes/class-hsn-wc-tax-calculator.php';
+        include_once HSN_WC_PLUGIN_DIR . 'includes/class-hsn-wc-database.php';
+        include_once HSN_WC_PLUGIN_DIR . 'includes/functions.php';
     }
     
     /**
-     * Init WooHSN Pro when WordPress Initializes
+     * Init HSN for WooCommerce when WordPress Initializes
      */
     public function init() {
         // Initialize classes
-        new WooHSN_Pro_Admin();
-        new WooHSN_Pro_Frontend();
-        new WooHSN_Pro_Product();
-        new WooHSN_Pro_Import_Export();
-        new WooHSN_Pro_Tax_Calculator();
-        new WooHSN_Pro_Database();
+        new HSN_WC_Admin();
+        new HSN_WC_Frontend();
+        new HSN_WC_Product();
+        new HSN_WC_Import_Export();
+        new HSN_WC_Tax_Calculator();
+        new HSN_WC_Database();
         
         // Load plugin textdomain
         $this->load_textdomain();
@@ -117,7 +118,7 @@ class WooHSN_Pro {
      * Load plugin textdomain
      */
     public function load_textdomain() {
-        load_plugin_textdomain('woohsn-pro', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+        load_plugin_textdomain('hsn-for-woocommerce', false, dirname(plugin_basename(__FILE__)) . '/languages/');
     }
     
     /**
@@ -134,8 +135,8 @@ class WooHSN_Pro {
         $this->create_upload_directory();
         
         // Schedule events
-        if (!wp_next_scheduled('woohsn_pro_daily_cleanup')) {
-            wp_schedule_event(time(), 'daily', 'woohsn_pro_daily_cleanup');
+        if (!wp_next_scheduled('hsn_wc_daily_cleanup')) {
+            wp_schedule_event(time(), 'daily', 'hsn_wc_daily_cleanup');
         }
         
         // Flush rewrite rules
@@ -147,7 +148,7 @@ class WooHSN_Pro {
      */
     public function deactivate() {
         // Clear scheduled events
-        wp_clear_scheduled_hook('woohsn_pro_daily_cleanup');
+        wp_clear_scheduled_hook('hsn_wc_daily_cleanup');
         
         // Flush rewrite rules
         flush_rewrite_rules();
@@ -162,7 +163,7 @@ class WooHSN_Pro {
         $charset_collate = $wpdb->get_charset_collate();
         
         // HSN Codes table
-        $table_name = $wpdb->prefix . 'woohsn_pro_codes';
+        $table_name = $wpdb->prefix . 'hsn_wc_codes';
         $sql = "CREATE TABLE $table_name (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             hsn_code varchar(20) NOT NULL,
@@ -175,7 +176,7 @@ class WooHSN_Pro {
         ) $charset_collate;";
         
         // Import/Export logs table
-        $table_logs = $wpdb->prefix . 'woohsn_pro_logs';
+        $table_logs = $wpdb->prefix . 'hsn_wc_logs';
         $sql_logs = "CREATE TABLE $table_logs (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             operation_type varchar(20) NOT NULL,
@@ -202,7 +203,7 @@ class WooHSN_Pro {
     private function insert_default_hsn_codes() {
         global $wpdb;
         
-        $table_name = $wpdb->prefix . 'woohsn_pro_codes';
+        $table_name = $wpdb->prefix . 'hsn_wc_codes';
         
         $default_codes = array(
             array('hsn_code' => '1001', 'description' => 'Wheat and meslin', 'gst_rate' => 0.00),
@@ -222,17 +223,17 @@ class WooHSN_Pro {
      */
     private function set_default_options() {
         $defaults = array(
-            'woohsn_pro_display_position' => 'after_title',
-            'woohsn_pro_display_format' => 'HSN Code: {code}',
-            'woohsn_pro_color' => '#333333',
-            'woohsn_pro_font_size' => '14',
-            'woohsn_pro_font_weight' => 'normal',
-            'woohsn_pro_background_color' => '#f8f9fa',
-            'woohsn_pro_border_color' => '#dee2e6',
-            'woohsn_pro_enable_tax_calculation' => 'yes',
-            'woohsn_pro_show_gst_rate' => 'yes',
-            'woohsn_pro_cache_duration' => '3600',
-            'woohsn_pro_version' => WOOHSN_PRO_VERSION
+            'hsn_wc_display_position' => 'after_title',
+            'hsn_wc_display_format' => 'HSN Code: {code}',
+            'hsn_wc_color' => '#333333',
+            'hsn_wc_font_size' => '14',
+            'hsn_wc_font_weight' => 'normal',
+            'hsn_wc_background_color' => '#f8f9fa',
+            'hsn_wc_border_color' => '#dee2e6',
+            'hsn_wc_enable_tax_calculation' => 'yes',
+            'hsn_wc_show_gst_rate' => 'yes',
+            'hsn_wc_cache_duration' => '3600',
+            'hsn_wc_version' => HSN_WC_VERSION
         );
         
         foreach ($defaults as $key => $value) {
@@ -247,7 +248,7 @@ class WooHSN_Pro {
      */
     private function create_upload_directory() {
         $upload_dir = wp_upload_dir();
-        $woohsn_dir = $upload_dir['basedir'] . '/woohsn-pro';
+        $woohsn_dir = $upload_dir['basedir'] . '/hsn-wc';
         
         if (!file_exists($woohsn_dir)) {
             wp_mkdir_p($woohsn_dir);
@@ -265,11 +266,11 @@ class WooHSN_Pro {
 }
 
 /**
- * Main instance of WooHSN Pro
+ * Main instance of HSN for WooCommerce
  */
-function WooHSN_Pro() {
-    return WooHSN_Pro::instance();
+function HSN_For_WooCommerce() {
+    return HSN_For_WooCommerce::instance();
 }
 
 // Global for backwards compatibility
-$GLOBALS['woohsn_pro'] = WooHSN_Pro();
+$GLOBALS['hsn_wc'] = HSN_For_WooCommerce();
