@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: WooHSN Pro
- * Plugin URI: https://woohsnpro.com/
+ * Plugin URI: https://github.com/chetanupare/woohsn-pro
  * Description: Professional HSN (Harmonized System of Nomenclature) code management for WooCommerce with advanced features, bulk operations, and tax calculations.
  * Version: 2.0.0
- * Author: WooHSN Pro Team
- * Author URI: https://woohsnpro.com/
+ * Author: Chetan Upare
+ * Author URI: https://github.com/chetanupare
  * Text Domain: woohsn-pro
  * Domain Path: /languages
  * Requires at least: 5.0

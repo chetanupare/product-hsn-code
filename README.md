@@ -1,9 +1,10 @@
 # WooHSN Pro - Professional HSN Code Management for WooCommerce
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/woohsn-pro/woohsn-pro)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/chetanupare/woohsn-pro)
 [![WordPress](https://img.shields.io/badge/WordPress-5.0%2B-blue.svg)](https://wordpress.org)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg)](https://woocommerce.com)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
+[![Author](https://img.shields.io/badge/author-Chetan%20Upare-orange.svg)](https://github.com/chetanupare)
 
 ## 🚀 Overview
 
@@ -245,14 +246,14 @@ This project is licensed under the GPL v2 or later - see the [LICENSE](LICENSE) 
 
 ## 🆘 Support
 
-- **Documentation:** [Plugin Documentation](https://woohsnpro.com/docs/)
+- **Documentation:** [GitHub Wiki](https://github.com/chetanupare/woohsn-pro/wiki)
 - **Support Forum:** [WordPress.org Support](https://wordpress.org/support/plugin/woohsn-pro/)
-- **Premium Support:** [Contact Us](https://woohsnpro.com/support/)
-- **Bug Reports:** [GitHub Issues](https://github.com/woohsn-pro/woohsn-pro/issues)
+- **Bug Reports:** [GitHub Issues](https://github.com/chetanupare/woohsn-pro/issues)
+- **Feature Requests:** [GitHub Discussions](https://github.com/chetanupare/woohsn-pro/discussions)
 
 ## 🏆 Credits
 
-- **Development Team:** WooHSN Pro Development Team
+- **Author & Developer:** [Chetan Upare](https://github.com/chetanupare)
 - **HSN Database:** Government of India Classification
 - **Icons:** WordPress Dashicons
 - **Testing:** WooCommerce Community
