@@ -28,13 +28,15 @@ class WooHSN_Admin {
      * Add admin menu
      */
     public function add_admin_menu() {
+        $icon_url = WOOHSN_PLUGIN_URL . 'assets/images/woohsn-icon.png';
+        
         add_menu_page(
             __('WooHSN', 'woohsn'),
             __('WooHSN', 'woohsn'),
             'manage_options',
             'woohsn',
             array($this, 'admin_page'),
-            'dashicons-list-view',
+            $icon_url,
             30
         );
         
@@ -151,6 +153,10 @@ class WooHSN_Admin {
         
         ?>
         <div class="woohsn-dashboard-widget">
+            <div class="woohsn-widget-header">
+                <img src="<?php echo esc_url(WOOHSN_PLUGIN_URL . 'assets/images/woohsn-icon.png'); ?>" alt="WooHSN" class="woohsn-widget-icon" />
+                <h3><?php esc_html_e('WooHSN Overview', 'woohsn'); ?></h3>
+            </div>
             <div class="woohsn-stats">
                 <div class="stat-item">
                     <h3><?php echo esc_html($total_products); ?></h3>

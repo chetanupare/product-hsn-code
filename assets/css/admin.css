@@ -8,6 +8,18 @@
     border-radius: 4px;
 }
 
+.woohsn-header-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.woohsn-header-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+}
+
 .woohsn-admin-header h1 {
     margin: 0 0 10px 0;
     color: #23282d;
@@ -86,6 +98,26 @@
 
 .woohsn-dashboard-widget {
     padding: 0;
+}
+
+.woohsn-widget-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+}
+
+.woohsn-widget-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.woohsn-widget-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #23282d;
 }
 
 .woohsn-progress-container {

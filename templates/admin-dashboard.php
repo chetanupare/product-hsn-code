@@ -15,8 +15,13 @@ $stats = $database->get_hsn_statistics();
 
 <div class="wrap woohsn-pro-admin">
     <div class="woohsn-admin-header">
-        <h1><?php esc_html_e('WooHSN Dashboard', 'woohsn'); ?></h1>
-        <p><?php esc_html_e('Smart HSN tagging system for WooCommerce stores. Automate GST readiness with minimal effort.', 'woohsn'); ?></p>
+        <div class="woohsn-header-content">
+            <img src="<?php echo esc_url(WOOHSN_PLUGIN_URL . 'assets/images/woohsn-icon.png'); ?>" alt="WooHSN" class="woohsn-header-icon" />
+            <div>
+                <h1><?php esc_html_e('WooHSN Dashboard', 'woohsn'); ?></h1>
+                <p><?php esc_html_e('Smart HSN tagging system for WooCommerce stores. Automate GST readiness with minimal effort.', 'woohsn'); ?></p>
+            </div>
+        </div>
     </div>
     
     <div class="woohsn-pro-dashboard-stats">
