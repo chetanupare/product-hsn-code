@@ -20,7 +20,10 @@ class WooHSN_Admin {
         add_action('wp_dashboard_setup', array($this, 'add_dashboard_widgets'));
         add_action('wp_ajax_woohsn_search_hsn', array($this, 'ajax_search_hsn'));
         add_action('wp_ajax_woohsn_bulk_assign', array($this, 'ajax_bulk_assign'));
+        add_action('wp_ajax_woohsn_import_hsn_codes', array($this, 'ajax_import_hsn_codes'));
+        add_action('wp_ajax_woohsn_export_hsn_codes', array($this, 'ajax_export_hsn_codes'));
         add_action('admin_notices', array($this, 'admin_notices'));
+        add_action('admin_notices', array($this, 'display_hpos_status_notice'));
         add_filter('plugin_action_links_' . WOOHSN_PLUGIN_BASENAME, array($this, 'plugin_action_links'));
     }
     
@@ -284,5 +287,69 @@ class WooHSN_Admin {
         $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=woohsn-settings')) . '">' . __('Settings', 'woohsn') . '</a>';
         array_unshift($links, $settings_link);
         return $links;
+    }
+    
+    /**
+     * Display HPOS status notice
+     */
+    public function display_hpos_status_notice() {
+        // Only show on WooHSN admin pages
+        if (!isset($_GET['page']) || strpos($_GET['page'], 'woohsn') === false) {
+            return;
+        }
+        
+        // Only show to administrators
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        
+        $hpos_enabled = WooHSN_HPOS_Compatibility::is_hpos_enabled();
+        $sync_enabled = WooHSN_HPOS_Compatibility::is_sync_enabled();
+        
+        if ($hpos_enabled) {
+            ?>
+            <div class="notice notice-success">
+                <p>
+                    <strong><?php esc_html_e('WooHSN HPOS Status:', 'woohsn'); ?></strong>
+                    <?php esc_html_e('High-Performance Order Storage is enabled and supported.', 'woohsn'); ?>
+                    <?php if ($sync_enabled): ?>
+                        <?php esc_html_e('Synchronization with legacy posts is active.', 'woohsn'); ?>
+                    <?php endif; ?>
+                </p>
+            </div>
+            <?php
+        } else {
+            ?>
+            <div class="notice notice-info">
+                <p>
+                    <strong><?php esc_html_e('WooHSN HPOS Status:', 'woohsn'); ?></strong>
+                    <?php esc_html_e('Using legacy order storage. Consider enabling High-Performance Order Storage for better performance.', 'woohsn'); ?>
+                    <a href="<?php echo esc_url(admin_url('admin.php?page=wc-settings&tab=advanced&section=features')); ?>" target="_blank">
+                        <?php esc_html_e('Configure HPOS', 'woohsn'); ?>
+                    </a>
+                </p>
+            </div>
+            <?php
+        }
+    }
+    
+    /**
+     * AJAX import HSN codes (placeholder for future implementation)
+     */
+    public function ajax_import_hsn_codes() {
+        check_ajax_referer('woohsn_nonce', 'nonce');
+        
+        // TODO: Implement HSN codes import functionality
+        wp_send_json_error(__('Import functionality not yet implemented.', 'woohsn'));
+    }
+    
+    /**
+     * AJAX export HSN codes (placeholder for future implementation)
+     */
+    public function ajax_export_hsn_codes() {
+        check_ajax_referer('woohsn_nonce', 'nonce');
+        
+        // TODO: Implement HSN codes export functionality
+        wp_send_json_error(__('Export functionality not yet implemented.', 'woohsn'));
     }
 }
