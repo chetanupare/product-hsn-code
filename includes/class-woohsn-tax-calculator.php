@@ -45,9 +45,18 @@ class WooHSN_Tax_Calculator {
     }
     
     /**
-     * Calculate order totals with HSN breakdown
+     * Calculate order totals with HSN breakdown (HPOS compatible)
      */
     public function calculate_order_totals($order) {
+        // Ensure we have a proper order object
+        if (is_numeric($order)) {
+            $order = WooHSN_HPOS_Compatibility::get_order($order);
+        }
+        
+        if (!$order) {
+            return array();
+        }
+        
         $order_totals = array(
             'subtotal' => 0,
             'total_gst' => 0,
@@ -86,6 +95,10 @@ class WooHSN_Tax_Calculator {
                 );
             }
         }
+        
+        // Store calculation results in order meta using HPOS-compatible method
+        $order_id = $order->get_id();
+        WooHSN_HPOS_Compatibility::update_order_meta($order_id, '_woohsn_gst_calculation', $order_totals);
         
         return $order_totals;
     }

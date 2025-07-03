@@ -145,3 +145,66 @@ function woohsn_get_all_gst_rates() {
     
     return array_map('floatval', $rates);
 }
+
+/**
+ * Check if HPOS is enabled
+ */
+function woohsn_is_hpos_enabled() {
+    return WooHSN_HPOS_Compatibility::is_hpos_enabled();
+}
+
+/**
+ * Get order HSN summary (HPOS compatible)
+ */
+function woohsn_get_order_hsn_summary($order_id) {
+    return WooHSN_HPOS_Compatibility::get_order_meta($order_id, '_woohsn_summary', true);
+}
+
+/**
+ * Get order total GST amount (HPOS compatible)
+ */
+function woohsn_get_order_total_gst($order_id) {
+    return WooHSN_HPOS_Compatibility::get_order_meta($order_id, '_woohsn_total_gst', true);
+}
+
+/**
+ * Update order HSN data (HPOS compatible)
+ */
+function woohsn_update_order_hsn_data($order_id, $hsn_data) {
+    return WooHSN_HPOS_Compatibility::update_order_meta($order_id, '_woohsn_summary', $hsn_data);
+}
+
+/**
+ * Get orders with HSN data (HPOS compatible)
+ */
+function woohsn_get_orders_with_hsn($args = array()) {
+    $default_args = array(
+        'status' => 'any',
+        'limit' => -1,
+        'meta_query' => array(
+            array(
+                'key' => '_woohsn_summary',
+                'compare' => 'EXISTS'
+            )
+        )
+    );
+    
+    $args = wp_parse_args($args, $default_args);
+    
+    return WooHSN_HPOS_Compatibility::get_orders($args);
+}
+
+/**
+ * Check if order has HSN data (HPOS compatible)
+ */
+function woohsn_order_has_hsn_data($order_id) {
+    $hsn_summary = woohsn_get_order_hsn_summary($order_id);
+    return !empty($hsn_summary);
+}
+
+/**
+ * Get HPOS compatibility status
+ */
+function woohsn_get_hpos_status() {
+    return WooHSN_HPOS_Compatibility::get_supported_features();
+}

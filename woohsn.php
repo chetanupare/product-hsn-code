@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WooHSN
  * Plugin URI: https://wordpress.org/plugins/woohsn/
- * Description: Smart HSN tagging system for WooCommerce stores. Automate GST readiness with minimal effort.
+ * Description: Smart HSN tagging system for WooCommerce stores with HPOS support. Automate GST readiness with minimal effort.
  * Version: 1.0.0
  * Author: Chetan Upare
  * Author URI: https://profiles.wordpress.org/chetanupare/
@@ -35,6 +35,13 @@ if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get
     add_action('admin_notices', 'woohsn_woocommerce_missing_notice');
     return;
 }
+
+// Declare HPOS compatibility
+add_action('before_woocommerce_init', function() {
+    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+    }
+});
 
 /**
  * WooCommerce missing notice
@@ -89,9 +96,11 @@ class WooHSN {
      * Include required core files
      */
     public function includes() {
+        include_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-hpos-compatibility.php';
         include_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-admin.php';
         include_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-frontend.php';
         include_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-product.php';
+        include_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-order.php';
         include_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-import-export.php';
         include_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-tax-calculator.php';
         include_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-database.php';
@@ -106,6 +115,7 @@ class WooHSN {
         new WooHSN_Admin();
         new WooHSN_Frontend();
         new WooHSN_Product();
+        new WooHSN_Order();
         new WooHSN_Import_Export();
         new WooHSN_Tax_Calculator();
         new WooHSN_Database();
