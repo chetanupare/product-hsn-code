@@ -167,9 +167,16 @@
 }
 
 /* Responsive design */
+.woohsn-display, 
+.woohsn-pro-display, 
+.woohsn-pro-tax-calculator {
+    max-width: 100% !important; 
+    box-sizing: border-box; 
+}
+
 @media (max-width: 768px) {
-    .woohsn-pro-display {
-        font-size: 12px;
+    .woohsn-display {
+        font-size: 13px;
         padding: 6px 10px;
     }
     
@@ -181,6 +188,31 @@
         font-size: 14px;
     }
 }
+
+@media (max-width: 600px) {
+    .woohsn-display, .woohsn-pro-display {
+        display: block;          
+        text-align: center;      
+        margin: 10px 0;
+    }
+    
+    .woohsn-pro-tax-calculator {
+        padding: 12px;           
+    }
+}
+
+@media (max-width: 480px) {
+    .woohsn-display, .woohsn-cart-hsn {
+        font-size: 11px !important; 
+    }
+
+    .woohsn-pro-tax-row {
+        flex-direction: column; 
+        align-items: flex-start;
+        font-size: 12px;
+    }
+}
+
 
 /* Print styles */
 @media print {
