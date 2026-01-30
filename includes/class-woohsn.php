@@ -1,21 +1,6 @@
 <?php
 /**
- * Plugin Name: WooHSN
- * Plugin URI: https://wordpress.org/plugins/woohsn/
- * Description: Smart HSN tagging system for WooCommerce stores with HPOS support. Automate GST readiness with minimal effort.
- * Version: 1.0.0
- * Author: Chetan Upare
- * Author URI: https://profiles.wordpress.org/chetanupare/
- * Text Domain: woohsn
- * Domain Path: /languages
- * Requires at least: 5.0
- * Tested up to: 6.4
- * Requires PHP: 7.4
- * WC requires at least: 5.0
- * WC tested up to: 8.5
- * License: GPL v2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Network: false
+ * Main WooHSN Class.
  *
  * @package WooHSN
  */
@@ -25,42 +10,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Define plugin constants.
-define( 'WOOHSN_VERSION', '1.0.0' );
-define( 'WOOHSN_PLUGIN_FILE', __FILE__ );
-define( 'WOOHSN_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WOOHSN_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'WOOHSN_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-
-// Check if WooCommerce is active.
-if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
-	add_action( 'admin_notices', 'woohsn_woocommerce_missing_notice' );
-	return;
-}
-
-// Declare HPOS compatibility.
-add_action(
-	'before_woocommerce_init',
-	function () {
-		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
-		}
-	}
-);
-
-/**
- * WooCommerce missing notice.
- */
-function woohsn_woocommerce_missing_notice() {
-	?>
-	<div class="notice notice-error">
-		<p><?php esc_html_e( 'WooHSN requires WooCommerce to be installed and active.', 'woohsn' ); ?></p>
-	</div>
-	<?php
-}
-
 /**
  * Main WooHSN Class.
+ *
+ * @package WooHSN
  */
 class WooHSN {
 
@@ -94,10 +47,10 @@ class WooHSN {
 	 */
 	private function init_hooks() {
 		// Activation hook.
-		register_activation_hook( __FILE__, array( $this, 'activate' ) );
+		register_activation_hook( WOOHSN_PLUGIN_FILE, array( $this, 'activate' ) );
 
 		// Deactivation hook.
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
+		register_deactivation_hook( WOOHSN_PLUGIN_FILE, array( $this, 'deactivate' ) );
 
 		// Initialize plugin.
 		add_action( 'init', array( $this, 'init_plugin' ) );
@@ -162,7 +115,7 @@ class WooHSN {
 
 		// HSN codes table.
 		$table_name = $wpdb->prefix . 'woohsn_codes';
-		$sql = "CREATE TABLE $table_name (
+		$sql        = "CREATE TABLE $table_name (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			hsn_code varchar(20) NOT NULL,
 			description text,
@@ -175,7 +128,7 @@ class WooHSN {
 
 		// Import/Export logs table.
 		$table_name_logs = $wpdb->prefix . 'woohsn_logs';
-		$sql_logs = "CREATE TABLE $table_name_logs (
+		$sql_logs        = "CREATE TABLE $table_name_logs (
 			id mediumint(9) NOT NULL AUTO_INCREMENT,
 			operation_type varchar(20) NOT NULL,
 			status varchar(20) NOT NULL,
@@ -227,7 +180,7 @@ class WooHSN {
 	 */
 	private function add_default_options() {
 		$default_options = array(
-			'woohsn_enable_hsn_display'     => 'yes',
+			'woohsn_enable_hsn_display'    => 'yes',
 			'woohsn_display_format'        => 'HSN Code: {code}',
 			'woohsn_enable_tax_calculator' => 'yes',
 			'woohsn_cache_duration'        => 3600,
@@ -241,6 +194,3 @@ class WooHSN {
 		}
 	}
 }
-
-// Initialize the plugin.
-WooHSN::instance();

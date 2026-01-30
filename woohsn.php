@@ -69,7 +69,7 @@ require_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-order.php';
 require_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-tax-calculator.php';
 require_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-import-export.php';
 require_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn-hpos-compatibility.php';
-require_once WOOHSN_PLUGIN_DIR . 'class-woohsn.php';
+require_once WOOHSN_PLUGIN_DIR . 'includes/class-woohsn.php';
 
 // Initialize the plugin.
 WooHSN::instance();
