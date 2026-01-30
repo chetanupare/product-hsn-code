@@ -58,15 +58,15 @@ class WooHSN_Frontend {
 		$display_format = get_option( 'woohsn_display_format', 'HSN Code: {code}' );
 		$show_gst_rate  = get_option( 'woohsn_show_gst_rate', 'yes' );
 
-		// Get GST rate if enabled
+		// Get GST rate if enabled.
 		$gst_rate = '';
-		if ( $show_gst_rate === 'yes' ) {
+		if ( true === $show_gst_rate ) {
 			$gst_rate = $this->get_gst_rate_for_hsn( $hsn_code );
 		}
 
 		$output = str_replace( '{code}', $hsn_code, $display_format );
 
-		if ( ! empty( $gst_rate ) && $show_gst_rate === 'yes' ) {
+		if ( ! empty( $gst_rate ) && true === $show_gst_rate ) {
 			$output .= ' <span class="woohsn-gst-rate">(GST: ' . $gst_rate . '%)</span>';
 		}
 
@@ -74,7 +74,7 @@ class WooHSN_Frontend {
 	}
 
 	/**
-	 * Display HSN code on shop page
+	 * Display HSN code on shop page.
 	 */
 	public function display_hsn_code_shop() {
 		global $product;
@@ -85,7 +85,7 @@ class WooHSN_Frontend {
 
 		$display_in_shop = get_option( 'woohsn_display_in_shop', 'no' );
 
-		if ( $display_in_shop !== 'yes' ) {
+		if ( 'yes' !== $display_in_shop ) {
 			return;
 		}
 
@@ -100,12 +100,17 @@ class WooHSN_Frontend {
 	}
 
 	/**
-	 * Add HSN code to cart item name
+	 * Add HSN code to cart item name.
+	 *
+	 * @param string $product_name   Product name.
+	 * @param array  $cart_item      Cart item data.
+	 * @param string $cart_item_key  Cart item key.
+	 * @return string Modified product name.
 	 */
 	public function add_hsn_to_cart( $product_name, $cart_item, $cart_item_key ) {
 		$show_in_cart = get_option( 'woohsn_display_in_cart', 'no' );
 
-		if ( $show_in_cart !== 'yes' ) {
+		if ( 'yes' !== $show_in_cart ) {
 			return $product_name;
 		}
 
@@ -120,12 +125,17 @@ class WooHSN_Frontend {
 	}
 
 	/**
-	 * Display HSN code in order details
+	 * Display HSN code in order details.
+	 *
+	 * @param int    $item_id    Item ID.
+	 * @param array  $item       Item data.
+	 * @param object $order      Order object.
+	 * @param bool   $plain_text Plain text flag.
 	 */
 	public function display_hsn_in_order( $item_id, $item, $order, $plain_text ) {
 		$show_in_order = get_option( 'woohsn_display_in_order', 'yes' );
 
-		if ( $show_in_order !== 'yes' ) {
+		if ( 'yes' !== $show_in_order ) {
 			return;
 		}
 
@@ -133,8 +143,8 @@ class WooHSN_Frontend {
 		$hsn_code   = get_post_meta( $product_id, 'woohsn_code', true );
 
 		if ( ! empty( $hsn_code ) ) {
-			if ( $plain_text ) {
-				echo "\nHSN Code: " . $hsn_code;
+			if ( true === $plain_text ) {
+				echo "\nHSN Code: " . esc_html( $hsn_code );
 			} else {
 				echo '<div class="woohsn-order-hsn"><strong>HSN Code:</strong> ' . esc_html( $hsn_code ) . '</div>';
 			}
@@ -142,7 +152,10 @@ class WooHSN_Frontend {
 	}
 
 	/**
-	 * HSN code shortcode
+	 * HSN code shortcode.
+	 *
+	 * @param array $atts Shortcode attributes.
+	 * @return string HSN code display.
 	 */
 	public function hsn_code_shortcode( $atts ) {
 		$atts = shortcode_atts(
@@ -164,7 +177,7 @@ class WooHSN_Frontend {
 
 		$output = str_replace( '{code}', $hsn_code, $atts['format'] );
 
-		if ( $atts['show_gst'] === 'yes' ) {
+		if ( 'yes' === $atts['show_gst'] ) {
 			$gst_rate = $this->get_gst_rate_for_hsn( $hsn_code );
 			if ( ! empty( $gst_rate ) ) {
 				$output .= ' (GST: ' . $gst_rate . '%)';
@@ -175,7 +188,10 @@ class WooHSN_Frontend {
 	}
 
 	/**
-	 * Get GST rate for HSN code
+	 * Get GST rate for HSN code.
+	 *
+	 * @param string $hsn_code HSN code.
+	 * @return float GST rate.
 	 */
 	private function get_gst_rate_for_hsn( $hsn_code ) {
 		global $wpdb;
@@ -183,7 +199,7 @@ class WooHSN_Frontend {
 		$cache_key = 'woohsn_gst_rate_' . $hsn_code;
 		$gst_rate  = get_transient( $cache_key );
 
-		if ( $gst_rate === false ) {
+		if ( false === $gst_rate ) {
 			$gst_rate = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
@@ -199,7 +215,10 @@ class WooHSN_Frontend {
 	}
 
 	/**
-	 * Render HSN display with custom styling
+	 * Render HSN display with custom styling.
+	 *
+	 * @param string $content HSN content.
+	 * @param string $context Display context.
 	 */
 	private function render_hsn_display( $content, $context = 'single-product' ) {
 		$color            = get_option( 'woohsn_color', '#333333' );
@@ -222,7 +241,7 @@ class WooHSN_Frontend {
 
 		$style_string = implode( '; ', $styles );
 
-		echo '<div class="woohsn-display woohsn-' . esc_attr( $context ) . '" style="' . $style_string . '">';
+		echo '<div class="woohsn-display woohsn-' . esc_attr( $context ) . '" style="' . esc_attr( $style_string ) . '">';
 		echo wp_kses_post( $content );
 		echo '</div>';
 	}
