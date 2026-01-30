@@ -28,23 +28,23 @@ class WooHSN_Order {
 	 * Initialize hooks
 	 */
 	private function init_hooks() {
-		// Order meta box hooks (works for both HPOS and legacy)
+		// Order meta box hooks (works for both HPOS and legacy).
 		add_action( 'add_meta_boxes', array( $this, 'add_order_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_order_meta_box' ) );
 
-		// HPOS specific hooks
+		// HPOS specific hooks.
 		if ( WooHSN_HPOS_Compatibility::is_hpos_enabled() ) {
 			add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'display_order_hsn_summary' ) );
 		} else {
-			// Legacy hooks
+			// Legacy hooks.
 			add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'display_order_hsn_summary' ) );
 		}
 
-		// Order calculation hooks
+		// Order calculation hooks.
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'process_order_hsn_data' ), 10, 1 );
 		add_action( 'woocommerce_order_status_changed', array( $this, 'update_order_hsn_on_status_change' ), 10, 3 );
 
-		// Admin order columns
+		// Admin order columns.
 		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'add_order_columns' ), 20 );
 		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_columns' ), 20 );
 		add_action( 'manage_woocommerce_page_wc-orders_custom_column', array( $this, 'display_order_column_content' ), 20, 2 );
@@ -68,10 +68,12 @@ class WooHSN_Order {
 	}
 
 	/**
-	 * Order HSN meta box callback
+	 * Order HSN meta box callback.
+	 *
+	 * @param WP_Post|WC_Order $post_or_order Post object or order object.
 	 */
 	public function order_hsn_meta_box_callback( $post_or_order ) {
-		// Handle both HPOS and legacy
+		// Handle both HPOS and legacy.
 		$order = ( $post_or_order instanceof WP_Post ) ? wc_get_order( $post_or_order->ID ) : $post_or_order;
 
 		if ( ! $order ) {
@@ -80,7 +82,7 @@ class WooHSN_Order {
 
 		$order_id = $order->get_id();
 
-		// Get HSN summary
+		// Get HSN summary.
 		$hsn_summary = $this->get_order_hsn_summary( $order );
 
 		if ( empty( $hsn_summary ) ) {
@@ -103,9 +105,9 @@ class WooHSN_Order {
 		foreach ( $hsn_summary as $hsn_code => $data ) {
 			echo '<tr>';
 			echo '<td><strong>' . esc_html( $hsn_code ) . '</strong></td>';
-			echo '<td>' . wc_price( $data['taxable_amount'] ) . '</td>';
+			echo '<td>' . wp_kses_post( wc_price( $data['taxable_amount'] ) ) . '</td>';
 			echo '<td>' . esc_html( $data['gst_rate'] ) . '%</td>';
-			echo '<td>' . wc_price( $data['gst_amount'] ) . '</td>';
+			echo '<td>' . wp_kses_post( wc_price( $data['gst_amount'] ) ) . '</td>';
 			echo '</tr>';
 		}
 
@@ -113,15 +115,17 @@ class WooHSN_Order {
 		echo '</table>';
 		echo '</div>';
 
-		// Store HSN summary in order meta
+		// Store HSN summary in order meta.
 		WooHSN_HPOS_Compatibility::update_order_meta( $order_id, '_woohsn_summary', $hsn_summary );
 	}
 
 	/**
-	 * Save order meta box data
+	 * Save order meta box data.
+	 *
+	 * @param int $post_id Post ID.
 	 */
 	public function save_order_meta_box( $post_id ) {
-		// Only process for orders
+		// Only process for orders.
 		if ( ! WooHSN_HPOS_Compatibility::is_wc_order( $post_id ) ) {
 			return;
 		}
@@ -131,12 +135,14 @@ class WooHSN_Order {
 			return;
 		}
 
-		// Recalculate HSN data
+		// Recalculate HSN data.
 		$this->calculate_and_store_order_hsn_data( $order );
 	}
 
 	/**
-	 * Display HSN summary in order admin
+	 * Display HSN summary in order admin.
+	 *
+	 * @param WC_Order $order Order object.
 	 */
 	public function display_order_hsn_summary( $order ) {
 		if ( ! is_admin() ) {
@@ -157,7 +163,7 @@ class WooHSN_Order {
 		foreach ( $hsn_summary as $hsn_code => $data ) {
 			echo '<tr>';
 			echo '<td class="label">' . esc_html__( 'HSN', 'woohsn' ) . ' ' . esc_html( $hsn_code ) . ':</td>';
-			echo '<td class="total">' . wc_price( $data['gst_amount'] ) . ' <small>(' . esc_html( $data['gst_rate'] ) . '% GST)</small></td>';
+			echo '<td class="total">' . wp_kses_post( wc_price( $data['gst_amount'] ) ) . ' <small>(' . esc_html( $data['gst_rate'] ) . '% GST)</small></td>';
 			echo '</tr>';
 		}
 
@@ -166,7 +172,9 @@ class WooHSN_Order {
 	}
 
 	/**
-	 * Process HSN data when order is created
+	 * Process HSN data when order is created.
+	 *
+	 * @param int $order_id Order ID.
 	 */
 	public function process_order_hsn_data( $order_id ) {
 		$order = WooHSN_HPOS_Compatibility::get_order( $order_id );
@@ -178,13 +186,17 @@ class WooHSN_Order {
 	}
 
 	/**
-	 * Update HSN data when order status changes
+	 * Update HSN data when order status changes.
+	 *
+	 * @param int    $order_id    Order ID.
+	 * @param string $from_status Previous status.
+	 * @param string $to_status   New status.
 	 */
 	public function update_order_hsn_on_status_change( $order_id, $from_status, $to_status ) {
-		// Only recalculate for specific status changes
+		// Only recalculate for specific status changes.
 		$recalculate_statuses = array( 'processing', 'completed' );
 
-		if ( in_array( $to_status, $recalculate_statuses ) ) {
+		if ( in_array( $to_status, $recalculate_statuses, true ) ) {
 			$order = WooHSN_HPOS_Compatibility::get_order( $order_id );
 			if ( $order ) {
 				$this->calculate_and_store_order_hsn_data( $order );
@@ -193,16 +205,18 @@ class WooHSN_Order {
 	}
 
 	/**
-	 * Calculate and store HSN data for an order
+	 * Calculate and store HSN data for an order.
+	 *
+	 * @param WC_Order $order Order object.
 	 */
 	public function calculate_and_store_order_hsn_data( $order ) {
 		$order_id    = $order->get_id();
 		$hsn_summary = $this->get_order_hsn_summary( $order );
 
-		// Store the summary
+		// Store the summary.
 		WooHSN_HPOS_Compatibility::update_order_meta( $order_id, '_woohsn_summary', $hsn_summary );
 
-		// Store total GST amount
+		// Store total GST amount.
 		$total_gst = 0;
 		foreach ( $hsn_summary as $data ) {
 			$total_gst += $data['gst_amount'];
@@ -210,12 +224,15 @@ class WooHSN_Order {
 
 		WooHSN_HPOS_Compatibility::update_order_meta( $order_id, '_woohsn_total_gst', $total_gst );
 
-		// Store calculation timestamp
-		WooHSN_HPOS_Compatibility::update_order_meta( $order_id, '_woohsn_calculated_at', current_time( 'timestamp' ) );
+		// Store calculation timestamp.
+		WooHSN_HPOS_Compatibility::update_order_meta( $order_id, '_woohsn_calculated_at', gmdate( 'Y-m-d H:i:s' ) );
 	}
 
 	/**
-	 * Get HSN summary for an order
+	 * Get HSN summary for an order.
+	 *
+	 * @param WC_Order $order Order object.
+	 * @return array HSN summary data.
 	 */
 	public function get_order_hsn_summary( $order ) {
 		$hsn_summary = array();
@@ -255,19 +272,23 @@ class WooHSN_Order {
 	}
 
 	/**
-	 * Get GST rate for a product
+	 * Get GST rate for a product.
+	 *
+	 * @param int    $product_id Product ID.
+	 * @param string $hsn_code   HSN code.
+	 * @return float GST rate.
 	 */
 	private function get_product_gst_rate( $product_id, $hsn_code ) {
-		// Check for custom GST rate
+		// Check for custom GST rate.
 		$enable_custom_gst = get_post_meta( $product_id, 'woohsn_enable_custom_gst', true );
-		if ( $enable_custom_gst === 'yes' ) {
+		if ( 'yes' === $enable_custom_gst ) {
 			$custom_rate = get_post_meta( $product_id, 'woohsn_custom_gst_rate', true );
-			if ( $custom_rate !== '' ) {
+			if ( '' !== $custom_rate ) {
 				return floatval( $custom_rate );
 			}
 		}
 
-		// Get rate from HSN database
+		// Get rate from HSN database.
 		global $wpdb;
 		$gst_rate = $wpdb->get_var(
 			$wpdb->prepare(
@@ -280,16 +301,19 @@ class WooHSN_Order {
 	}
 
 	/**
-	 * Add columns to orders list
+	 * Add columns to orders list.
+	 *
+	 * @param array $columns Existing columns.
+	 * @return array Modified columns.
 	 */
 	public function add_order_columns( $columns ) {
-		// Add HSN column after order total
+		// Add HSN column after order total.
 		$new_columns = array();
 
 		foreach ( $columns as $key => $value ) {
 			$new_columns[ $key ] = $value;
 
-			if ( $key === 'order_total' ) {
+			if ( 'order_total' === $key ) {
 				$new_columns['woohsn_gst'] = __( 'GST Amount', 'woohsn' );
 			}
 		}
@@ -298,15 +322,18 @@ class WooHSN_Order {
 	}
 
 	/**
-	 * Display content for order column (HPOS)
+	 * Display content for order column (HPOS).
+	 *
+	 * @param string   $column Column name.
+	 * @param WC_Order $order  Order object.
 	 */
 	public function display_order_column_content( $column, $order ) {
-		if ( $column === 'woohsn_gst' ) {
+		if ( 'woohsn_gst' === $column ) {
 			$order_id  = $order->get_id();
 			$total_gst = WooHSN_HPOS_Compatibility::get_order_meta( $order_id, '_woohsn_total_gst', true );
 
 			if ( $total_gst ) {
-				echo wc_price( $total_gst );
+				echo wp_kses_post( wc_price( $total_gst ) );
 			} else {
 				echo '—';
 			}
@@ -314,14 +341,17 @@ class WooHSN_Order {
 	}
 
 	/**
-	 * Display content for order column (Legacy)
+	 * Display content for order column (Legacy).
+	 *
+	 * @param string $column  Column name.
+	 * @param int    $post_id Post ID.
 	 */
 	public function display_order_column_content_legacy( $column, $post_id ) {
-		if ( $column === 'woohsn_gst' ) {
+		if ( 'woohsn_gst' === $column ) {
 			$total_gst = WooHSN_HPOS_Compatibility::get_order_meta( $post_id, '_woohsn_total_gst', true );
 
 			if ( $total_gst ) {
-				echo wc_price( $total_gst );
+				echo wp_kses_post( wc_price( $total_gst ) );
 			} else {
 				echo '—';
 			}

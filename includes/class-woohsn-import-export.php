@@ -74,7 +74,7 @@ class WooHSN_Import_Export {
 						++$success_count;
 					} else {
 						++$error_count;
-						error_log( '[WooHSN] Import failed for HSN code: ' . $hsn_code . ' - ' . $wpdb->last_error );
+						// Debug logging silenced for production compliance.
 					}
 				} else {
 					++$error_count;
@@ -85,6 +85,7 @@ class WooHSN_Import_Export {
 			wp_send_json_success(
 				array(
 					'message'       => sprintf(
+						/* translators: %1$d: number of successful imports, %2$d: number of errors */
 						__( 'Import completed. %1$d records imported, %2$d errors.', 'woohsn' ),
 						$success_count,
 						$error_count
@@ -95,7 +96,7 @@ class WooHSN_Import_Export {
 			);
 
 		} catch ( Exception $e ) {
-			error_log( '[WooHSN] Exception in ajax_import_csv: ' . $e->getMessage() );
+			// Debug logging silenced for production compliance.
 			wp_send_json_error( __( 'Import failed due to an unexpected error.', 'woohsn' ) );
 		}
 	}
@@ -118,7 +119,7 @@ class WooHSN_Import_Export {
 			$hsn_codes = $wpdb->get_results( "SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_codes ORDER BY hsn_code ASC" );
 
 			if ( ! $hsn_codes ) {
-				error_log( '[WooHSN] No HSN codes found for export' );
+				// Debug logging silenced for production compliance.
 				wp_send_json_error( __( 'No HSN codes found to export.', 'woohsn' ) );
 			}
 
@@ -152,7 +153,7 @@ class WooHSN_Import_Export {
 			exit;
 
 		} catch ( Exception $e ) {
-			error_log( '[WooHSN] Exception in ajax_export_csv: ' . $e->getMessage() );
+			// Debug logging silenced for production compliance.
 			wp_send_json_error( __( 'Export failed due to an unexpected error.', 'woohsn' ) );
 		}
 	}
