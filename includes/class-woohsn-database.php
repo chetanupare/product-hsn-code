@@ -1,13 +1,20 @@
 <?php
 /**
  * Database functionality for WooHSN
+ *
+ * @package WooHSN
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Database functionality for WooHSN.
+ *
+ * @package WooHSN
+ */
 class WooHSN_Database {
 
 	/**
@@ -33,9 +40,9 @@ class WooHSN_Database {
 			wp_send_json_error( __( 'You do not have permission to perform this action.', 'woohsn' ) );
 		}
 
-		$hsn_code    = sanitize_text_field( $_POST['hsn_code'] );
-		$description = sanitize_textarea_field( $_POST['description'] );
-		$gst_rate    = floatval( $_POST['gst_rate'] );
+		$hsn_code    = isset( $_POST['hsn_code'] ) ? sanitize_text_field( wp_unslash( $_POST['hsn_code'] ) ) : '';
+		$description = isset( $_POST['description'] ) ? sanitize_textarea_field( wp_unslash( $_POST['description'] ) ) : '';
+		$gst_rate    = isset( $_POST['gst_rate'] ) ? floatval( $_POST['gst_rate'] ) : 0;
 
 		if ( empty( $hsn_code ) ) {
 			wp_send_json_error( __( 'HSN code is required.', 'woohsn' ) );
@@ -44,7 +51,7 @@ class WooHSN_Database {
 		global $wpdb;
 
 		try {
-			// Check if HSN code already exists
+			// Check if HSN code already exists.
 			$existing = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT id FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",

@@ -1,13 +1,20 @@
 <?php
 /**
  * Order functionality for WooHSN with HPOS compatibility
+ *
+ * @package WooHSN
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Order functionality for WooHSN with HPOS compatibility.
+ *
+ * @package WooHSN
+ */
 class WooHSN_Order {
 
 	/**

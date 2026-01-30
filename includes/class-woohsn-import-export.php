@@ -1,13 +1,20 @@
 <?php
 /**
  * Import/Export functionality for WooHSN
+ *
+ * @package WooHSN
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Import/Export functionality for WooHSN.
+ *
+ * @package WooHSN
+ */
 class WooHSN_Import_Export {
 
 	/**

@@ -1,15 +1,20 @@
 <?php
 /**
  * Helper functions for WooHSN
+ *
+ * @package WooHSN
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
- * Get HSN code for product
+ * Get HSN code for product.
+ *
+ * @param int $product_id Product ID.
+ * @return string HSN code.
  */
 function woohsn_get_product_hsn_code( $product_id ) {
 	return get_post_meta( $product_id, 'woohsn_code', true );

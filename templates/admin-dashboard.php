@@ -1,14 +1,16 @@
 <?php
 /**
  * Admin Dashboard Template for WooHSN Pro
+ *
+ * @package WooHSN
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Get statistics
+// Get statistics.
 $database = new WooHSN_Database();
 $stats    = $database->get_hsn_statistics();
 ?>

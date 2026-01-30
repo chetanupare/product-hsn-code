@@ -1,13 +1,20 @@
 <?php
 /**
  * HPOS (High-Performance Order Storage) compatibility for WooHSN
+ *
+ * @package WooHSN
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * HPOS (High-Performance Order Storage) compatibility for WooHSN.
+ *
+ * @package WooHSN
+ */
 class WooHSN_HPOS_Compatibility {
 
 	/**

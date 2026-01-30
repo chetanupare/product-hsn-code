@@ -1,13 +1,20 @@
 <?php
 /**
  * Tax calculation functionality for WooHSN
+ *
+ * @package WooHSN
  */
 
-// Prevent direct access
+// Prevent direct access.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Tax calculation functionality for WooHSN.
+ *
+ * @package WooHSN
+ */
 class WooHSN_Tax_Calculator {
 
 	/**
