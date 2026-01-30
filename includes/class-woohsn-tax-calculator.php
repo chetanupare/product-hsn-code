@@ -26,7 +26,11 @@ class WooHSN_Tax_Calculator {
 	}
 
 	/**
-	 * Add HSN information to tax totals
+	 * Add HSN information to tax totals.
+	 *
+	 * @param array   $tax_totals Tax totals.
+	 * @param WC_Cart $cart       Cart object.
+	 * @return array Modified tax totals.
 	 */
 	public function add_hsn_to_tax_totals( $tax_totals, $cart ) {
 		if ( ! get_option( 'woohsn_enable_tax_calculation', 'yes' ) ) {
@@ -37,14 +41,14 @@ class WooHSN_Tax_Calculator {
 	}
 
 	/**
-	 * AJAX calculate GST for product
+	 * AJAX calculate GST for product.
 	 */
 	public function ajax_calculate_gst() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		$product_id = intval( $_POST['product_id'] );
-		$price      = floatval( $_POST['price'] );
-		$quantity   = intval( $_POST['quantity'] );
+		$product_id = isset( $_POST['product_id'] ) ? intval( $_POST['product_id'] ) : 0;
+		$price      = isset( $_POST['price'] ) ? floatval( $_POST['price'] ) : 0;
+		$quantity   = isset( $_POST['quantity'] ) ? intval( $_POST['quantity'] ) : 1;
 
 		$calculation = woohsn_calculate_product_gst( $product_id, $price, $quantity );
 
@@ -52,10 +56,13 @@ class WooHSN_Tax_Calculator {
 	}
 
 	/**
-	 * Calculate order totals with HSN breakdown (HPOS compatible)
+	 * Calculate order totals with HSN breakdown (HPOS compatible).
+	 *
+	 * @param WC_Order|int $order Order object or ID.
+	 * @return array Order totals with HSN breakdown.
 	 */
 	public function calculate_order_totals( $order ) {
-		// Ensure we have a proper order object
+		// Ensure we have a proper order object.
 		if ( is_numeric( $order ) ) {
 			$order = WooHSN_HPOS_Compatibility::get_order( $order );
 		}
@@ -83,7 +90,7 @@ class WooHSN_Tax_Calculator {
 				$order_totals['subtotal']  += $line_total;
 				$order_totals['total_gst'] += $gst_amount;
 
-				// Group by GST rate
+				// Group by GST rate.
 				if ( ! isset( $order_totals['gst_breakdown'][ $gst_rate ] ) ) {
 					$order_totals['gst_breakdown'][ $gst_rate ] = array(
 						'rate'           => $gst_rate,
@@ -103,7 +110,7 @@ class WooHSN_Tax_Calculator {
 			}
 		}
 
-		// Store calculation results in order meta using HPOS-compatible method
+		// Store calculation results in order meta using HPOS-compatible method.
 		$order_id = $order->get_id();
 		WooHSN_HPOS_Compatibility::update_order_meta( $order_id, '_woohsn_gst_calculation', $order_totals );
 

@@ -39,9 +39,9 @@ class WooHSN_Import_Export {
 			wp_send_json_error( __( 'No file uploaded.', 'woohsn' ) );
 		}
 
-		$file = $_FILES['csv_file'];
+		$file = isset( $_FILES['csv_file'] ) ? $_FILES['csv_file'] : array();
 
-		if ( $file['error'] !== UPLOAD_ERR_OK ) {
+		if ( UPLOAD_ERR_OK !== $file['error'] ) {
 			wp_send_json_error( __( 'File upload error.', 'woohsn' ) );
 		}
 
@@ -70,7 +70,7 @@ class WooHSN_Import_Export {
 						array( '%s', '%s', '%f' )
 					);
 
-					if ( $result !== false ) {
+					if ( true === $result ) {
 						++$success_count;
 					} else {
 						++$error_count;
@@ -119,21 +119,21 @@ class WooHSN_Import_Export {
 				wp_send_json_error( __( 'No HSN codes found to export.', 'woohsn' ) );
 			}
 
-			$filename = 'woohsn_codes_export_' . date( 'Y-m-d_H-i-s' ) . '.csv';
+			$filename = 'woohsn_codes_export_' . gmdate( 'Y-m-d_H-i-s' ) . '.csv';
 
 			header( 'Content-Type: text/csv' );
 			header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 
 			$output = fopen( 'php://output', 'w' );
 
-			if ( $output === false ) {
+			if ( false === $output ) {
 				throw new Exception( 'Failed to open output stream' );
 			}
 
-			// Headers
+			// Headers.
 			fputcsv( $output, array( 'HSN Code', 'Description', 'GST Rate' ) );
 
-			// Data
+			// Data.
 			foreach ( $hsn_codes as $hsn_code ) {
 				fputcsv(
 					$output,
