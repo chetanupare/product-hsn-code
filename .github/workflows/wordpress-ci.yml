@@ -29,9 +29,9 @@ jobs:
       - name: WordPress Coding Standards
         run: |
           if [ -f vendor/bin/phpcs ]; then
-            vendor/bin/phpcs
+            vendor/bin/phpcs --standard=WordPress --extensions=php --ignore=vendor .
           elif command -v phpcs &> /dev/null; then
-            phpcs
+            phpcs --standard=WordPress --extensions=php --ignore=vendor .
           else
             echo "PHPCS not found, skipping coding standards check"
           fi
