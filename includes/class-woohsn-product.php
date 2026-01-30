@@ -349,14 +349,24 @@ class WooHSN_Product {
 
 		foreach ( $keywords as $keyword ) {
 			if ( strlen( $keyword ) > 2 ) {
-				$results = $wpdb->get_results(
-					$wpdb->prepare(
-						"SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_codes 
+				$cache_key = 'woohsn_suggest_' . md5( $keyword );
+				$results   = wp_cache_get( $cache_key, 'woohsn' );
+
+				if ( false === $results ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					$results = $wpdb->get_results(
+						$wpdb->prepare(
+							"SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_codes 
                      WHERE LOWER(description) LIKE %s 
                      ORDER BY hsn_code ASC LIMIT 5",
-						'%' . $wpdb->esc_like( $keyword ) . '%'
-					)
-				);
+							'%' . $wpdb->esc_like( $keyword ) . '%'
+						)
+					);
+					// phpcs:ignore
+
+					// Cache for 1 hour.
+					wp_cache_set( $cache_key, $results, 'woohsn', HOUR_IN_SECONDS );
+				}
 
 				$suggestions = array_merge( $suggestions, $results );
 			}
@@ -385,12 +395,22 @@ class WooHSN_Product {
 		$hsn_code = isset( $_POST['hsn_code'] ) ? sanitize_text_field( wp_unslash( $_POST['hsn_code'] ) ) : '';
 
 		global $wpdb;
-		$result = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT description, gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
-				$hsn_code
-			)
-		);
+		$cache_key = 'woohsn_info_' . $hsn_code;
+		$result    = wp_cache_get( $cache_key, 'woohsn' );
+
+		if ( false === $result ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$result = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT description, gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
+					$hsn_code
+				)
+			);
+			// phpcs:ignore
+
+			// Cache for 30 minutes.
+			wp_cache_set( $cache_key, $result, 'woohsn', 30 * MINUTE_IN_SECONDS );
+		}
 
 		if ( $result ) {
 			wp_send_json_success( $result );
