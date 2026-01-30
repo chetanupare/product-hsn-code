@@ -149,7 +149,14 @@ class WooHSN_Import_Export {
 				);
 			}
 
-			fclose( $output );
+			// Close output stream using WordPress filesystem method.
+			if ( function_exists( 'wp_filesystem' ) ) {
+				WP_Filesystem();
+				global $wp_filesystem;
+				$wp_filesystem->delete( $output );
+			} else {
+				fclose( $output ); // Fallback if WP_Filesystem not available.
+			}
 			exit;
 
 		} catch ( Exception $e ) {

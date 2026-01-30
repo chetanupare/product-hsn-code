@@ -108,6 +108,8 @@ class WooHSN_Frontend {
 	 * @return string Modified product name.
 	 */
 	public function add_hsn_to_cart( $product_name, $cart_item, $cart_item_key ) {
+		// Intentional: $cart_item_key parameter is not used in current implementation.
+		unset( $cart_item_key );
 		$show_in_cart = get_option( 'woohsn_display_in_cart', 'no' );
 
 		if ( 'yes' !== $show_in_cart ) {

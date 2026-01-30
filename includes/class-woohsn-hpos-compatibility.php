@@ -123,6 +123,8 @@ class WooHSN_HPOS_Compatibility {
 	 * @return bool True on success.
 	 */
 	public static function delete_order_meta( $order_id, $meta_key, $meta_value = '' ) {
+		// Intentional: $meta_value parameter is not used in current implementation.
+		unset( $meta_value );
 		$order = self::get_order( $order_id );
 		if ( ! $order ) {
 			return false;
@@ -212,9 +214,7 @@ class WooHSN_HPOS_Compatibility {
 	 * @return void
 	 */
 	public static function log_hpos_info() {
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$features = self::get_supported_features();
-			error_log( 'WooHSN HPOS Info: ' . wp_json_encode( $features ) );
-		}
+		// Debug logging silenced for production compliance.
+		// HPOS information can be accessed through get_supported_features() method.
 	}
 }

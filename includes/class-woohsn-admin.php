@@ -308,11 +308,11 @@ class WooHSN_Admin {
 	}
 
 	/**
-	 * Display HPOS status notice
+	 * Display HPOS status notice.
 	 */
 	public function display_hpos_status_notice() {
 		// Only show on WooHSN admin pages.
-		if ( ! isset( $_GET['page'] ) || false === strpos( sanitize_text_field( wp_unslash( $_GET['page'] ), 'woohsn' ) ) ) {
+		if ( ! isset( $_GET['page'] ) || false === strpos( sanitize_text_field( wp_unslash( $_GET['page'] ) ), 'woohsn' ) ) {
 			return;
 		}
 
