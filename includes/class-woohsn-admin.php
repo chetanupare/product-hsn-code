@@ -97,10 +97,12 @@ class WooHSN_Admin {
 	}
 
 	/**
-	 * Enqueue admin scripts and styles
+	 * Enqueue admin scripts and styles.
+	 *
+	 * @param string $hook Hook name.
 	 */
 	public function enqueue_admin_scripts( $hook ) {
-		if ( strpos( $hook, 'woohsn' ) !== false ) {
+		if ( false !== strpos( sanitize_text_field( $hook ), 'woohsn' ) ) {
 			wp_enqueue_style( 'woohsn-admin-css', WOOHSN_PLUGIN_URL . 'assets/css/admin.css', array(), WOOHSN_VERSION );
 			wp_enqueue_script( 'woohsn-admin-js', WOOHSN_PLUGIN_URL . 'assets/js/admin.js', array( 'jquery', 'wp-color-picker' ), WOOHSN_VERSION, true );
 
@@ -126,19 +128,19 @@ class WooHSN_Admin {
 	 * Register settings
 	 */
 	public function register_settings() {
-		// Display settings
+		// Display settings.
 		register_setting( 'woohsn_display', 'woohsn_display_position' );
 		register_setting( 'woohsn_display', 'woohsn_display_format' );
 		register_setting( 'woohsn_display', 'woohsn_show_gst_rate' );
 
-		// Style settings
+		// Style settings.
 		register_setting( 'woohsn_style', 'woohsn_color' );
 		register_setting( 'woohsn_style', 'woohsn_font_size' );
 		register_setting( 'woohsn_style', 'woohsn_font_weight' );
 		register_setting( 'woohsn_style', 'woohsn_background_color' );
 		register_setting( 'woohsn_style', 'woohsn_border_color' );
 
-		// Advanced settings
+		// Advanced settings.
 		register_setting( 'woohsn_advanced', 'woohsn_enable_tax_calculation' );
 		register_setting( 'woohsn_advanced', 'woohsn_cache_duration' );
 	}
@@ -242,7 +244,7 @@ class WooHSN_Admin {
 	public function ajax_search_hsn() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		$search_term = sanitize_text_field( $_POST['search_term'] );
+		$search_term = isset( $_POST['search_term'] ) ? sanitize_text_field( wp_unslash( $_POST['search_term'] ) ) : '';
 		global $wpdb;
 
 		$results = $wpdb->get_results(
@@ -264,8 +266,8 @@ class WooHSN_Admin {
 	public function ajax_bulk_assign() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		$product_ids = array_map( 'intval', $_POST['product_ids'] );
-		$hsn_code    = sanitize_text_field( $_POST['hsn_code'] );
+		$product_ids = isset( $_POST['product_ids'] ) ? array_map( 'intval', $_POST['product_ids'] ) : array();
+		$hsn_code    = isset( $_POST['hsn_code'] ) ? sanitize_text_field( wp_unslash( $_POST['hsn_code'] ) ) : '';
 
 		$success_count = 0;
 		foreach ( $product_ids as $product_id ) {
@@ -282,8 +284,8 @@ class WooHSN_Admin {
 	 */
 	public function admin_notices() {
 		if ( isset( $_GET['woohsn_message'] ) ) {
-			$message = sanitize_text_field( $_GET['woohsn_message'] );
-			$type    = isset( $_GET['woohsn_type'] ) ? sanitize_text_field( $_GET['woohsn_type'] ) : 'success';
+			$message = sanitize_text_field( wp_unslash( $_GET['woohsn_message'] ) );
+			$type    = isset( $_GET['woohsn_type'] ) ? sanitize_text_field( wp_unslash( $_GET['woohsn_type'] ) ) : 'success';
 
 			?>
 			<div class="notice notice-<?php echo esc_attr( $type ); ?> is-dismissible">
@@ -294,7 +296,10 @@ class WooHSN_Admin {
 	}
 
 	/**
-	 * Plugin action links
+	 * Plugin action links.
+	 *
+	 * @param array $links Plugin links.
+	 * @return array Modified links.
 	 */
 	public function plugin_action_links( $links ) {
 		$settings_link = '<a href="' . esc_url( admin_url( 'admin.php?page=woohsn-settings' ) ) . '">' . __( 'Settings', 'woohsn' ) . '</a>';
@@ -306,12 +311,12 @@ class WooHSN_Admin {
 	 * Display HPOS status notice
 	 */
 	public function display_hpos_status_notice() {
-		// Only show on WooHSN admin pages
-		if ( ! isset( $_GET['page'] ) || strpos( $_GET['page'], 'woohsn' ) === false ) {
+		// Only show on WooHSN admin pages.
+		if ( ! isset( $_GET['page'] ) || false === strpos( sanitize_text_field( wp_unslash( $_GET['page'] ), 'woohsn' ) ) ) {
 			return;
 		}
 
-		// Only show to administrators
+		// Only show to administrators.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
@@ -352,7 +357,7 @@ class WooHSN_Admin {
 	public function ajax_import_hsn_codes() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		// TODO: Implement HSN codes import functionality
+		// TODO: Implement HSN codes import functionality.
 		wp_send_json_error( __( 'Import functionality not yet implemented.', 'woohsn' ) );
 	}
 
@@ -362,7 +367,7 @@ class WooHSN_Admin {
 	public function ajax_export_hsn_codes() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		// TODO: Implement HSN codes export functionality
+		// TODO: Implement HSN codes export functionality.
 		wp_send_json_error( __( 'Export functionality not yet implemented.', 'woohsn' ) );
 	}
 }

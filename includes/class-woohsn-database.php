@@ -73,12 +73,12 @@ class WooHSN_Database {
 				array( '%s', '%s', '%f' )
 			);
 
-			if ( $result === false ) {
+			if ( false === $result ) {
 				error_log( '[WooHSN] Database insert failed: ' . $wpdb->last_error );
 				wp_send_json_error( __( 'Failed to add HSN code. Please try again.', 'woohsn' ) );
 			}
 
-			// Clear cache
+			// Clear cache.
 			$this->clear_hsn_cache( $hsn_code );
 
 			wp_send_json_success(
@@ -103,10 +103,10 @@ class WooHSN_Database {
 		try {
 			$stats = array();
 
-			// Total HSN codes
+			// Total HSN codes.
 			$stats['total_hsn_codes'] = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}woohsn_codes" );
 
-			// HSN codes by GST rate
+			// HSN codes by GST rate.
 			$gst_breakdown = $wpdb->get_results(
 				"SELECT gst_rate, COUNT(*) as count FROM {$wpdb->prefix}woohsn_codes GROUP BY gst_rate ORDER BY gst_rate"
 			);
@@ -121,19 +121,19 @@ class WooHSN_Database {
 				}
 			}
 
-			// Products with HSN codes
+			// Products with HSN codes.
 			$stats['products_with_hsn'] = $wpdb->get_var(
 				"SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = 'woohsn_code' AND meta_value != ''"
 			);
 
-			// Products without HSN codes
+			// Products without HSN codes.
 			$total_products                = wp_count_posts( 'product' )->publish;
 			$stats['products_without_hsn'] = $total_products - $stats['products_with_hsn'];
 
-			// Completion percentage
+			// Completion percentage.
 			$stats['completion_percentage'] = $total_products > 0 ? round( ( $stats['products_with_hsn'] / $total_products ) * 100, 2 ) : 0;
 
-			// Recent activity
+			// Recent activity.
 			$stats['recent_imports'] = $wpdb->get_var(
 				"SELECT COUNT(*) FROM {$wpdb->prefix}woohsn_logs WHERE operation_type = 'import' AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
 			);
@@ -159,32 +159,34 @@ class WooHSN_Database {
 	}
 
 	/**
-	 * Clear HSN cache
+	 * Clear HSN cache.
+	 *
+	 * @param string $hsn_code HSN code.
 	 */
 	private function clear_hsn_cache( $hsn_code ) {
 		delete_transient( 'woohsn_gst_rate_' . $hsn_code );
 
-		// Clear object cache if available
+		// Clear object cache if available.
 		if ( function_exists( 'wp_cache_delete' ) ) {
 			wp_cache_delete( 'woohsn_gst_rate_' . $hsn_code );
 		}
 	}
 
 	/**
-	 * Daily cleanup routine
+	 * Daily cleanup routine.
 	 */
 	public function daily_cleanup() {
 		global $wpdb;
 
 		try {
-			// Clean up old log entries (older than 90 days)
+			// Clean up old log entries (older than 90 days).
 			$result1 = $wpdb->query( "DELETE FROM {$wpdb->prefix}woohsn_logs WHERE created_at < DATE_SUB(NOW(), INTERVAL 90 DAY)" );
 
-			// Optimize database tables
+			// Optimize database tables.
 			$result2 = $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}woohsn_codes" );
 			$result3 = $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}woohsn_logs" );
 
-			if ( $result1 === false || $result2 === false || $result3 === false ) {
+			if ( false === $result1 || false === $result2 || false === $result3 ) {
 				error_log( '[WooHSN] Database cleanup error: ' . $wpdb->last_error );
 			}
 		} catch ( Exception $e ) {
