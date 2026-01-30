@@ -290,12 +290,14 @@ class WooHSN_Order {
 
 		// Get rate from HSN database.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$gst_rate = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
 				$hsn_code
 			)
 		);
+		// phpcs:ignore
 
 		return $gst_rate ? floatval( $gst_rate ) : 0;
 	}

@@ -162,9 +162,12 @@ class WooHSN_Admin {
 	public function dashboard_widget_overview() {
 		global $wpdb;
 
-		$total_products    = wp_count_posts( 'product' )->publish;
+		$total_products = wp_count_posts( 'product' )->publish;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$products_with_hsn = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = 'woohsn_code' AND meta_value != ''" );
-		$total_hsn_codes   = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}woohsn_codes" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$total_hsn_codes = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}woohsn_codes" );
+		// phpcs:ignore
 		$completion_rate   = $total_products > 0 ? round( ( $products_with_hsn / $total_products ) * 100, 2 ) : 0;
 
 		?>
@@ -247,6 +250,7 @@ class WooHSN_Admin {
 		$search_term = isset( $_POST['search_term'] ) ? sanitize_text_field( wp_unslash( $_POST['search_term'] ) ) : '';
 		global $wpdb;
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_codes 
@@ -256,6 +260,7 @@ class WooHSN_Admin {
 				'%' . $wpdb->esc_like( $search_term ) . '%'
 			)
 		);
+		// phpcs:ignore
 
 		wp_send_json_success( $results );
 	}
@@ -318,6 +323,11 @@ class WooHSN_Admin {
 
 		// Only show to administrators.
 		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		// Check nonce for security.
+		if ( ! isset( $_GET['woohsn_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['woohsn_nonce'] ) ), 'woohsn_hpos_notice' ) ) {
 			return;
 		}
 

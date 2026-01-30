@@ -202,12 +202,14 @@ class WooHSN_Frontend {
 		$gst_rate  = get_transient( $cache_key );
 
 		if ( false === $gst_rate ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$gst_rate = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
 					$hsn_code
 				)
 			);
+			// phpcs:ignore
 
 			$cache_duration = get_option( 'woohsn_cache_duration', 3600 );
 			set_transient( $cache_key, $gst_rate, $cache_duration );

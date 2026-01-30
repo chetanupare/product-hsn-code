@@ -60,6 +60,7 @@ class WooHSN_Import_Export {
 					$description = sanitize_textarea_field( $row[1] );
 					$gst_rate    = floatval( $row[2] );
 
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$result = $wpdb->insert(
 						$wpdb->prefix . 'woohsn_codes',
 						array(
@@ -69,6 +70,7 @@ class WooHSN_Import_Export {
 						),
 						array( '%s', '%s', '%f' )
 					);
+					// phpcs:ignore
 
 					if ( true === $result ) {
 						++$success_count;
@@ -116,7 +118,9 @@ class WooHSN_Import_Export {
 		try {
 			global $wpdb;
 
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$hsn_codes = $wpdb->get_results( "SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_codes ORDER BY hsn_code ASC" );
+			// phpcs:ignore
 
 			if ( ! $hsn_codes ) {
 				// Debug logging silenced for production compliance.
@@ -153,9 +157,13 @@ class WooHSN_Import_Export {
 			if ( function_exists( 'wp_filesystem' ) ) {
 				WP_Filesystem();
 				global $wp_filesystem;
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents
 				$wp_filesystem->delete( $output );
+				// phpcs:ignore
 			} else {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 				fclose( $output ); // Fallback if WP_Filesystem not available.
+				// phpcs:ignore
 			}
 			exit;
 

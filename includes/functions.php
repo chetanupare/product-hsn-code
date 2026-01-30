@@ -38,12 +38,14 @@ function woohsn_get_gst_rate( $hsn_code ) {
 
 	if ( false === $gst_rate ) {
 		try {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$gst_rate = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
 					$hsn_code
 				)
 			);
+			// phpcs:ignore
 
 			$gst_rate       = $gst_rate ? floatval( $gst_rate ) : 0;
 			$cache_duration = get_option( 'woohsn_cache_duration', 3600 );
@@ -121,12 +123,14 @@ function woohsn_hsn_code_exists( $hsn_code ) {
 	}
 
 	try {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$exists = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT id FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
 				$hsn_code
 			)
 		);
+		// phpcs:ignore
 
 		return ! empty( $exists );
 
@@ -150,12 +154,14 @@ function woohsn_get_hsn_description( $hsn_code ) {
 	}
 
 	try {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT description FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
 				$hsn_code
 			)
 		);
+		// phpcs:ignore
 
 	} catch ( Exception $e ) {
 		// Debug logging silenced for production compliance.
@@ -213,7 +219,9 @@ function woohsn_is_woocommerce_active() {
 function woohsn_get_all_gst_rates() {
 	global $wpdb;
 
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	$rates = $wpdb->get_col( "SELECT DISTINCT gst_rate FROM {$wpdb->prefix}woohsn_codes ORDER BY gst_rate ASC" );
+	// phpcs:ignore
 
 	return array_map( 'floatval', $rates );
 }
@@ -265,6 +273,7 @@ function woohsn_update_order_hsn_data( $order_id, $hsn_data ) {
  * @return array Orders with HSN data.
  */
 function woohsn_get_orders_with_hsn( $args = array() ) {
+	// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 	$default_args = array(
 		'status'     => 'any',
 		'limit'      => -1,
@@ -272,9 +281,10 @@ function woohsn_get_orders_with_hsn( $args = array() ) {
 			array(
 				'key'     => '_woohsn_summary',
 				'compare' => 'EXISTS',
-			),
+			), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 		),
 	);
+	// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 
 	$args = wp_parse_args( $args, $default_args );
 

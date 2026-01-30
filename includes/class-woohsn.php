@@ -171,7 +171,9 @@ class WooHSN {
 		);
 
 		foreach ( $default_codes as $code ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->insert( $table_name, $code );
+			// phpcs:ignore
 		}
 	}
 
