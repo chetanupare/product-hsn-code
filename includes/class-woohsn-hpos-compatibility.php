@@ -28,26 +28,37 @@ class WooHSN_HPOS_Compatibility {
 	}
 
 	/**
-	 * Check if a post/order ID is a WooCommerce order
+	 * Check if a post/order ID is a WooCommerce order.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool True if WooCommerce order.
 	 */
 	public static function is_wc_order( $post_id ) {
 		if ( class_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class ) ) {
 			return 'shop_order' === \Automattic\WooCommerce\Utilities\OrderUtil::get_order_type( $post_id );
 		}
 
-		// Fallback for when OrderUtil is not available
+		// Fallback for when OrderUtil is not available.
 		return get_post_type( $post_id ) === 'shop_order';
 	}
 
 	/**
-	 * Get order object safely
+	 * Get order object safely.
+	 *
+	 * @param int $order_id Order ID.
+	 * @return WC_Order|false Order object or false.
 	 */
 	public static function get_order( $order_id ) {
 		return wc_get_order( $order_id );
 	}
 
 	/**
-	 * Get order meta data safely
+	 * Get order meta data safely.
+	 *
+	 * @param int    $order_id Order ID.
+	 * @param string $meta_key Meta key.
+	 * @param bool   $single   Whether to return single value.
+	 * @return mixed Meta value.
 	 */
 	public static function get_order_meta( $order_id, $meta_key, $single = true ) {
 		$order = self::get_order( $order_id );
@@ -59,7 +70,12 @@ class WooHSN_HPOS_Compatibility {
 	}
 
 	/**
-	 * Update order meta data safely
+	 * Update order meta data safely.
+	 *
+	 * @param int    $order_id  Order ID.
+	 * @param string $meta_key  Meta key.
+	 * @param mixed  $meta_value Meta value.
+	 * @return bool True on success.
 	 */
 	public static function update_order_meta( $order_id, $meta_key, $meta_value ) {
 		$order = self::get_order( $order_id );
@@ -74,7 +90,13 @@ class WooHSN_HPOS_Compatibility {
 	}
 
 	/**
-	 * Add order meta data safely
+	 * Add order meta data safely.
+	 *
+	 * @param int    $order_id  Order ID.
+	 * @param string $meta_key  Meta key.
+	 * @param mixed  $meta_value Meta value.
+	 * @param bool   $unique    Whether meta key should be unique.
+	 * @return bool True on success.
 	 */
 	public static function add_order_meta( $order_id, $meta_key, $meta_value, $unique = false ) {
 		$order = self::get_order( $order_id );
@@ -93,7 +115,12 @@ class WooHSN_HPOS_Compatibility {
 	}
 
 	/**
-	 * Delete order meta data safely
+	 * Delete order meta data safely.
+	 *
+	 * @param int    $order_id  Order ID.
+	 * @param string $meta_key  Meta key.
+	 * @param mixed  $meta_value Meta value.
+	 * @return bool True on success.
 	 */
 	public static function delete_order_meta( $order_id, $meta_key, $meta_value = '' ) {
 		$order = self::get_order( $order_id );
@@ -108,16 +135,21 @@ class WooHSN_HPOS_Compatibility {
 	}
 
 	/**
-	 * Get orders query with HPOS compatibility
+	 * Get orders query with HPOS compatibility.
+	 *
+	 * @param array $args Query arguments.
+	 * @return array Orders.
 	 */
 	public static function get_orders( $args = array() ) {
-		// Use WC_Order_Query for both HPOS and legacy
+		// Use WC_Order_Query for both HPOS and legacy.
 		$query = new WC_Order_Query( $args );
 		return $query->get_orders();
 	}
 
 	/**
-	 * Check if current screen is orders list (HPOS compatible)
+	 * Check if current screen is orders list (HPOS compatible).
+	 *
+	 * @return bool True if orders screen.
 	 */
 	public static function is_orders_screen() {
 		if ( ! is_admin() ) {
@@ -127,14 +159,17 @@ class WooHSN_HPOS_Compatibility {
 		global $current_screen;
 
 		if ( self::is_hpos_enabled() ) {
-			return $current_screen && $current_screen->id === 'woocommerce_page_wc-orders';
+			return $current_screen && 'woocommerce_page_wc-orders' === $current_screen->id;
 		} else {
-			return $current_screen && $current_screen->id === 'edit-shop_order';
+			return $current_screen && 'edit-shop_order' === $current_screen->id;
 		}
 	}
 
 	/**
-	 * Get order edit URL (HPOS compatible)
+	 * Get order edit URL (HPOS compatible).
+	 *
+	 * @param int $order_id Order ID.
+	 * @return string Edit URL.
 	 */
 	public static function get_order_edit_url( $order_id ) {
 		if ( self::is_hpos_enabled() && class_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class ) ) {
@@ -145,7 +180,9 @@ class WooHSN_HPOS_Compatibility {
 	}
 
 	/**
-	 * Check if synchronization is enabled
+	 * Check if synchronization is enabled.
+	 *
+	 * @return bool True if sync is enabled.
 	 */
 	public static function is_sync_enabled() {
 		if ( class_exists( \Automattic\WooCommerce\Utilities\OrderUtil::class ) ) {
@@ -155,7 +192,9 @@ class WooHSN_HPOS_Compatibility {
 	}
 
 	/**
-	 * Get supported features
+	 * Get supported features.
+	 *
+	 * @return array Supported features.
 	 */
 	public static function get_supported_features() {
 		return array(
@@ -168,7 +207,9 @@ class WooHSN_HPOS_Compatibility {
 	}
 
 	/**
-	 * Log HPOS compatibility information
+	 * Log HPOS compatibility information.
+	 *
+	 * @return void
 	 */
 	public static function log_hpos_info() {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {

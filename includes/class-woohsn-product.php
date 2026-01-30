@@ -48,7 +48,9 @@ class WooHSN_Product {
 	}
 
 	/**
-	 * Meta box callback
+	 * Meta box callback.
+	 *
+	 * @param WP_Post $post Post object.
 	 */
 	public function meta_box_callback( $post ) {
 		wp_nonce_field( basename( __FILE__ ), 'woohsn_nonce' );
@@ -81,7 +83,13 @@ class WooHSN_Product {
 				</label>
 			</p>
 			
-			<p id="woohsn-custom-gst-field" style="<?php echo $enable_custom_gst !== 'yes' ? 'display: none;' : ''; ?>">
+			if ( 'yes' === $enable_custom_gst ) {
+				$display_style = 'display: none;';
+			} else {
+				$display_style = '';
+			}
+			?>
+			<p id="woohsn-custom-gst-field" style="<?php echo esc_attr( $display_style ); ?>">
 				<label for="woohsn_custom_gst_rate"><strong><?php esc_html_e( 'Custom GST Rate (%):', 'woohsn' ); ?></strong></label>
 				<input type="number" id="woohsn_custom_gst_rate" name="woohsn_custom_gst_rate" 
 						value="<?php echo esc_attr( $custom_gst_rate ); ?>" step="0.01" min="0" max="100" class="widefat" />
@@ -185,7 +193,9 @@ class WooHSN_Product {
 	}
 
 	/**
-	 * Save meta box data
+	 * Save meta box data.
+	 *
+	 * @param int $post_id Post ID.
 	 */
 	public function save_meta_box_data( $post_id ) {
 		if ( ! isset( $_POST['woohsn_nonce'] ) || ! wp_verify_nonce( $_POST['woohsn_nonce'], basename( __FILE__ ) ) ) {
@@ -201,7 +211,7 @@ class WooHSN_Product {
 		}
 
 		if ( isset( $_POST['woohsn_code'] ) ) {
-			$hsn_code = sanitize_text_field( $_POST['woohsn_code'] );
+			$hsn_code = sanitize_text_field( wp_unslash( $_POST['woohsn_code'] ) );
 			update_post_meta( $post_id, 'woohsn_code', $hsn_code );
 		}
 
@@ -218,7 +228,9 @@ class WooHSN_Product {
 	}
 
 	/**
-	 * Add product options in general tab
+	 * Add product options in general tab.
+	 *
+	 * @param WC_Product $post Product object.
 	 */
 	public function add_product_options() {
 		global $post;
@@ -242,17 +254,22 @@ class WooHSN_Product {
 	}
 
 	/**
-	 * Save product options
+	 * Save product options.
+	 *
+	 * @param int $post_id Post ID.
 	 */
 	public function save_product_options( $post_id ) {
 		if ( isset( $_POST['woohsn_code_general'] ) ) {
-			$hsn_code = sanitize_text_field( $_POST['woohsn_code_general'] );
+			$hsn_code = sanitize_text_field( wp_unslash( $_POST['woohsn_code_general'] ) );
 			update_post_meta( $post_id, 'woohsn_code', $hsn_code );
 		}
 	}
 
 	/**
-	 * Add HSN code column to products list
+	 * Add HSN code column to products list.
+	 *
+	 * @param array $columns Existing columns.
+	 * @return array Modified columns.
 	 */
 	public function add_product_column( $columns ) {
 		$new_columns = array();
@@ -260,7 +277,7 @@ class WooHSN_Product {
 		foreach ( $columns as $key => $value ) {
 			$new_columns[ $key ] = $value;
 
-			if ( $key === 'price' ) {
+			if ( 'price' === $key ) {
 				$new_columns['woohsn_code'] = __( 'HSN Code', 'woohsn' );
 			}
 		}
@@ -269,10 +286,13 @@ class WooHSN_Product {
 	}
 
 	/**
-	 * Display HSN code in products list column
+	 * Display HSN code in products list column.
+	 *
+	 * @param string $column Column name.
+	 * @param int    $post_id Post ID.
 	 */
 	public function display_product_column( $column, $post_id ) {
-		if ( $column === 'woohsn_code' ) {
+		if ( 'woohsn_code' === $column ) {
 			$hsn_code = get_post_meta( $post_id, 'woohsn_code', true );
 
 			if ( ! empty( $hsn_code ) ) {
@@ -284,7 +304,10 @@ class WooHSN_Product {
 	}
 
 	/**
-	 * Make HSN code column sortable
+	 * Make HSN code column sortable.
+	 *
+	 * @param array $columns Columns.
+	 * @return array Modified columns.
 	 */
 	public function make_product_column_sortable( $columns ) {
 		$columns['woohsn_code'] = 'woohsn_code';
@@ -292,28 +315,31 @@ class WooHSN_Product {
 	}
 
 	/**
-	 * Handle column sorting
+	 * Handle column sorting.
+	 *
+	 * @param WP_Query $query Query object.
+	 * @return WP_Query Modified query.
 	 */
 	public function handle_column_sorting( $query ) {
 		if ( ! is_admin() || ! $query->is_main_query() ) {
 			return;
 		}
 
-		if ( $query->get( 'orderby' ) === 'woohsn_code' ) {
+		if ( 'woohsn_code' === $query->get( 'orderby' ) ) {
 			$query->set( 'meta_key', 'woohsn_code' );
 			$query->set( 'orderby', 'meta_value' );
 		}
 	}
 
 	/**
-	 * AJAX suggest HSN codes based on product title
+	 * AJAX suggest HSN codes based on product title.
 	 */
 	public function ajax_suggest_hsn() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		$product_title = sanitize_text_field( $_POST['product_title'] );
+		$product_title = isset( $_POST['product_title'] ) ? sanitize_text_field( wp_unslash( $_POST['product_title'] ) ) : '';
 
-		// Simple keyword matching for suggestions
+		// Simple keyword matching for suggestions.
 		$keywords = explode( ' ', strtolower( $product_title ) );
 
 		global $wpdb;
@@ -334,12 +360,12 @@ class WooHSN_Product {
 			}
 		}
 
-		// Remove duplicates
+			// Remove duplicates.
 		$unique_suggestions = array();
 		$seen_codes         = array();
 
 		foreach ( $suggestions as $suggestion ) {
-			if ( ! in_array( $suggestion->hsn_code, $seen_codes ) ) {
+			if ( ! in_array( $suggestion->hsn_code, $seen_codes, true ) ) {
 				$unique_suggestions[] = $suggestion;
 				$seen_codes[]         = $suggestion->hsn_code;
 			}
@@ -349,12 +375,12 @@ class WooHSN_Product {
 	}
 
 	/**
-	 * AJAX get HSN code information
+	 * AJAX get HSN code information.
 	 */
 	public function ajax_get_hsn_info() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		$hsn_code = sanitize_text_field( $_POST['hsn_code'] );
+		$hsn_code = isset( $_POST['hsn_code'] ) ? sanitize_text_field( wp_unslash( $_POST['hsn_code'] ) ) : '';
 
 		global $wpdb;
 		$result = $wpdb->get_row(
