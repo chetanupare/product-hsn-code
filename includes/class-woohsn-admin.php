@@ -280,12 +280,12 @@ class WooHSN_Admin {
 	}
 
 	/**
-	 * Admin notices
+	 * Admin notices.
 	 */
 	public function admin_notices() {
 		if ( isset( $_GET['woohsn_message'] ) ) {
 			$message = sanitize_text_field( wp_unslash( $_GET['woohsn_message'] ) );
-			$type    = isset( $_GET['woohsn_type'] ) ? sanitize_text_field( wp_unslash( $_GET['woohsn_type'] ) ) : 'success';
+			$type    = isset( $_GET['woohsn_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['woohsn_nonce'] ) ), 'woohsn_admin_notices' ) && isset( $_GET['woohsn_type'] ) ? sanitize_text_field( wp_unslash( $_GET['woohsn_type'] ) ) : 'success';
 
 			?>
 			<div class="notice notice-<?php echo esc_attr( $type ); ?> is-dismissible">

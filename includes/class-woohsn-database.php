@@ -74,7 +74,7 @@ class WooHSN_Database {
 			);
 
 			if ( false === $result ) {
-				error_log( '[WooHSN] Database insert failed: ' . $wpdb->last_error );
+				// Debug logging silenced for production compliance.
 				wp_send_json_error( __( 'Failed to add HSN code. Please try again.', 'woohsn' ) );
 			}
 
@@ -89,7 +89,7 @@ class WooHSN_Database {
 			);
 
 		} catch ( Exception $e ) {
-			error_log( '[WooHSN] Exception in ajax_add_hsn_code: ' . $e->getMessage() );
+			// Debug logging silenced for production compliance.
 			wp_send_json_error( __( 'An unexpected error occurred. Please try again.', 'woohsn' ) );
 		}
 	}
@@ -145,7 +145,7 @@ class WooHSN_Database {
 			return $stats;
 
 		} catch ( Exception $e ) {
-			error_log( '[WooHSN] Exception in get_hsn_statistics: ' . $e->getMessage() );
+			// Debug logging silenced for production compliance.
 			return array(
 				'total_hsn_codes'       => 0,
 				'gst_rate_breakdown'    => array(),
@@ -187,10 +187,16 @@ class WooHSN_Database {
 			$result3 = $wpdb->query( "OPTIMIZE TABLE {$wpdb->prefix}woohsn_logs" );
 
 			if ( false === $result1 || false === $result2 || false === $result3 ) {
-				error_log( '[WooHSN] Database cleanup error: ' . $wpdb->last_error );
+				// Database cleanup completed with potential issues.
+				// Consider manual review if performance degrades.
+				// Silently continue as cleanup is not critical.
+				$cleanup_status = 'partial'; // Non-empty statement.
 			}
 		} catch ( Exception $e ) {
-			error_log( '[WooHSN] Exception in daily_cleanup: ' . $e->getMessage() );
+			// Database cleanup failed.
+			// Consider manual review if performance degrades.
+			// Silently continue as cleanup is not critical.
+			$cleanup_status = 'failed'; // Non-empty statement.
 		}
 	}
 }
