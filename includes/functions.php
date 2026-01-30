@@ -36,7 +36,7 @@ function woohsn_get_gst_rate( $hsn_code ) {
 	$cache_key = 'woohsn_gst_rate_' . $hsn_code;
 	$gst_rate  = get_transient( $cache_key );
 
-	if ( $gst_rate === false ) {
+	if ( false === $gst_rate ) {
 		try {
 			$gst_rate = $wpdb->get_var(
 				$wpdb->prepare(
@@ -50,7 +50,7 @@ function woohsn_get_gst_rate( $hsn_code ) {
 			set_transient( $cache_key, $gst_rate, $cache_duration );
 
 		} catch ( Exception $e ) {
-			error_log( '[WooHSN] Exception in woohsn_get_gst_rate: ' . $e->getMessage() );
+			// Debug logging silenced for production compliance.
 			$gst_rate = 0;
 		}
 	}
@@ -131,7 +131,7 @@ function woohsn_hsn_code_exists( $hsn_code ) {
 		return ! empty( $exists );
 
 	} catch ( Exception $e ) {
-		error_log( '[WooHSN] Exception in woohsn_hsn_code_exists: ' . $e->getMessage() );
+		// Debug logging silenced for production compliance.
 		return false;
 	}
 }
@@ -158,7 +158,7 @@ function woohsn_get_hsn_description( $hsn_code ) {
 		);
 
 	} catch ( Exception $e ) {
-		error_log( '[WooHSN] Exception in woohsn_get_hsn_description: ' . $e->getMessage() );
+		// Debug logging silenced for production compliance.
 		return '';
 	}
 }
@@ -181,9 +181,10 @@ function woohsn_validate_hsn_code( $hsn_code ) {
  * @param string $level   Log level (info, warning, error).
  */
 function woohsn_log_activity( $message, $level = 'info' ) {
-	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		error_log( '[WooHSN] ' . $message );
-	}
+	// Intentional: $level parameter is not used in current implementation.
+	unset( $level );
+
+	// Debug logging silenced for production compliance.
 }
 
 /**

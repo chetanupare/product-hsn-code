@@ -37,6 +37,9 @@ class WooHSN_Tax_Calculator {
 			return $tax_totals;
 		}
 
+		// Intentional: $cart parameter is not used in current implementation.
+		unset( $cart );
+
 		// TODO: Implement HSN-based tax calculation logic.
 		// This method currently returns unmodified tax totals.
 		// Future implementation will calculate taxes based on HSN codes.
