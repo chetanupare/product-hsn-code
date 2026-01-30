@@ -77,7 +77,7 @@ class WooHSN_Product
             </p>
 
             <p id="woohsn-code-description" class="screen-reader-text">
-                Enter the HSN code for the product.
+                <?php esc_html_e('Enter the HSN code for this product.', 'woohsn'); ?>
             </p>
 
             <div
@@ -100,7 +100,7 @@ class WooHSN_Product
             </p>
 
             <p id="woohsn-enable-custom-gst-description" class="screen-reader-text">
-                When checked, an additional field appears allowing you to enter a custom GST percentage.
+                <?php esc_html_e('When checked, an additional field appears allowing you to enter a custom GST percentage.', 'woohsn'); ?>
             </p>
 
             <p id="woohsn-custom-gst-field" style="<?php echo $enable_custom_gst !== 'yes' ? 'display: none;' : ''; ?>">
@@ -110,7 +110,7 @@ class WooHSN_Product
             </p>
 
             <p id="woohsn-custom-gst-rate-description" class="screen-reader-text">
-                Enter the custom GST rate for the product. It should be a number between 0 and 100.
+                <?php esc_html_e('Enter the custom GST rate for the product. It should be a number between 0 and 100.', 'woohsn'); ?>
             </p>
 
             <div id="woohsn-hsn-info" style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-radius: 4px; display: none;">
@@ -126,10 +126,10 @@ class WooHSN_Product
                 $('#woohsn_enable_custom_gst').change(function() {
                     if ($(this).is(':checked')) {
                         $('#woohsn-custom-gst-field').show();
-                        $('#woohsn-status').text('Custom GST field are shown to enter a custom GST rate.');
+                        $('#woohsn-status').text('<?php esc_js_e('Custom GST field are shown to enter a custom GST rate.', 'woohsn'); ?>');
                     } else {
                         $('#woohsn-custom-gst-field').hide();
-                        $('#woohsn-status').text('Custom GST field are hidden.');
+                        $('#woohsn-status').text('<?php esc_js_e('Custom GST field are hidden.', 'woohsn'); ?>');
                     }
                 });
 
@@ -155,10 +155,10 @@ class WooHSN_Product
                                 var html = '';
 
                                 suggestions.forEach(function(item, index) {
-                                    html += '<li role="option" tabindex="' + index + '" aria-selected="false" id="woohsn-suggestion-' + index + '" class="woohsn-suggestion" style="margin: 5px 0; padding: 8px; border: 1px solid #ddd; cursor: pointer;">';
-                                    html += '<strong>' + item.hsn_code + '</strong> - ' + item.description;
+                                    html += '<li role="option" tabindex="' + (index === 0 ? '0' : '-1') + '" aria-selected="false" id="woohsn-suggestion-' + index + '" class="woohsn-suggestion" style="margin: 5px 0; padding: 8px; border: 1px solid #ddd; cursor: pointer;">';
+                                    html += '<strong>' + escapeHtml(item.hsn_code) + '</strong> - ' + escapeHtml(item.description);
                                     if (item.gst_rate) {
-                                        html += ' (GST: ' + item.gst_rate + '%)';
+                                        html += ' (GST: ' + escapeHtml(item.gst_rate) + '%)';
                                     }
                                     html += '</li>';
                                 });
@@ -166,7 +166,7 @@ class WooHSN_Product
                                 $('#woohsn-suggestions-list').html(html);
                                 $('#woohsn-suggestions').show();
                                 $('#woohsn-suggest-btn').attr('aria-expanded', 'true');
-                                $('#woohsn_status').text('Suggested HSN codes for "' + productTitle + '" are Loaded.');
+                                $('#woohsn-status').text('<?php esc_js_e('Suggested HSN codes for product:', 'woohsn'); ?> ' + productTitle);
 
                                 // Handle suggestion clicks
                                 $('.woohsn-suggestion').click(function() {
@@ -225,8 +225,8 @@ class WooHSN_Product
                         success: function(response) {
                             if (response.success && response.data) {
                                 var info = response.data;
-                                $('#woohsn-hsn-description').html('<strong><?php esc_js_e('Description:', 'woohsn'); ?></strong> ' + info.description);
-                                $('#woohsn-hsn-gst-rate').html('<strong><?php esc_js_e('GST Rate:', 'woohsn'); ?></strong> ' + info.gst_rate + '%');
+                                $('#woohsn-hsn-description').html('<strong><?php esc_js_e('Description:', 'woohsn'); ?></strong> ' + escapeHtml(info.description));
+                                $('#woohsn-hsn-gst-rate').html('<strong><?php esc_js_e('GST Rate:', 'woohsn'); ?></strong> ' + escapeHtml(info.gst_rate) + '%');
                                 $('#woohsn-hsn-info').show();
                             } else {
                                 $('#woohsn-hsn-info').hide();
@@ -235,6 +235,12 @@ class WooHSN_Product
                     });
                 }
             });
+
+            function escapeHtml(text) {
+                var span = document.createElement('span');
+                span.textContent = text;
+                return span.innerHTML;
+            }
         </script>
 <?php
     }
