@@ -21,18 +21,28 @@ function woohsn_get_product_hsn_code($product_id) {
 function woohsn_get_gst_rate($hsn_code) {
     global $wpdb;
     
+    if (empty($hsn_code)) {
+        return 0;
+    }
+    
     $cache_key = 'woohsn_gst_rate_' . $hsn_code;
     $gst_rate = get_transient($cache_key);
     
     if ($gst_rate === false) {
-        $gst_rate = $wpdb->get_var($wpdb->prepare(
-            "SELECT gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
-            $hsn_code
-        ));
-        
-        $gst_rate = $gst_rate ? floatval($gst_rate) : 0;
-        $cache_duration = get_option('woohsn_cache_duration', 3600);
-        set_transient($cache_key, $gst_rate, $cache_duration);
+        try {
+            $gst_rate = $wpdb->get_var($wpdb->prepare(
+                "SELECT gst_rate FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
+                $hsn_code
+            ));
+            
+            $gst_rate = $gst_rate ? floatval($gst_rate) : 0;
+            $cache_duration = get_option('woohsn_cache_duration', 3600);
+            set_transient($cache_key, $gst_rate, $cache_duration);
+            
+        } catch (Exception $e) {
+            error_log('[WooHSN] Exception in woohsn_get_gst_rate: ' . $e->getMessage());
+            $gst_rate = 0;
+        }
     }
     
     return floatval($gst_rate);
@@ -84,12 +94,22 @@ function woohsn_calculate_product_gst($product_id, $price = null, $quantity = 1)
 function woohsn_hsn_code_exists($hsn_code) {
     global $wpdb;
     
-    $exists = $wpdb->get_var($wpdb->prepare(
-        "SELECT id FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
-        $hsn_code
-    ));
+    if (empty($hsn_code)) {
+        return false;
+    }
     
-    return !empty($exists);
+    try {
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
+            $hsn_code
+        ));
+        
+        return !empty($exists);
+        
+    } catch (Exception $e) {
+        error_log('[WooHSN] Exception in woohsn_hsn_code_exists: ' . $e->getMessage());
+        return false;
+    }
 }
 
 /**
@@ -98,10 +118,20 @@ function woohsn_hsn_code_exists($hsn_code) {
 function woohsn_get_hsn_description($hsn_code) {
     global $wpdb;
     
-    return $wpdb->get_var($wpdb->prepare(
-        "SELECT description FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
-        $hsn_code
-    ));
+    if (empty($hsn_code)) {
+        return '';
+    }
+    
+    try {
+        return $wpdb->get_var($wpdb->prepare(
+            "SELECT description FROM {$wpdb->prefix}woohsn_codes WHERE hsn_code = %s",
+            $hsn_code
+        ));
+        
+    } catch (Exception $e) {
+        error_log('[WooHSN] Exception in woohsn_get_hsn_description: ' . $e->getMessage());
+        return '';
+    }
 }
 
 /**

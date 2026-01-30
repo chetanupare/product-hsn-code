@@ -38,42 +38,56 @@ class WooHSN_Import_Export {
             wp_send_json_error(__('File upload error.', 'woohsn'));
         }
         
-        $csv_data = array_map('str_getcsv', file($file['tmp_name']));
-        $headers = array_shift($csv_data);
-        
-        $success_count = 0;
-        $error_count = 0;
-        
-        global $wpdb;
-        
-        foreach ($csv_data as $row) {
-            if (count($row) >= 3) {
-                $hsn_code = sanitize_text_field($row[0]);
-                $description = sanitize_textarea_field($row[1]);
-                $gst_rate = floatval($row[2]);
-                
-                $result = $wpdb->insert(
-                    $wpdb->prefix . 'woohsn_codes',
-                    array(
-                        'hsn_code' => $hsn_code,
-                        'description' => $description,
-                        'gst_rate' => $gst_rate
-                    ),
-                    array('%s', '%s', '%f')
-                );
-                
-                if ($result) {
-                    $success_count++;
+        try {
+            $csv_data = array_map('str_getcsv', file($file['tmp_name']));
+            $headers = array_shift($csv_data);
+            
+            $success_count = 0;
+            $error_count = 0;
+            
+            global $wpdb;
+            
+            foreach ($csv_data as $row) {
+                if (count($row) >= 3) {
+                    $hsn_code = sanitize_text_field($row[0]);
+                    $description = sanitize_textarea_field($row[1]);
+                    $gst_rate = floatval($row[2]);
+                    
+                    $result = $wpdb->insert(
+                        $wpdb->prefix . 'woohsn_codes',
+                        array(
+                            'hsn_code' => $hsn_code,
+                            'description' => $description,
+                            'gst_rate' => $gst_rate
+                        ),
+                        array('%s', '%s', '%f')
+                    );
+                    
+                    if ($result !== false) {
+                        $success_count++;
+                    } else {
+                        $error_count++;
+                        error_log('[WooHSN] Import failed for HSN code: ' . $hsn_code . ' - ' . $wpdb->last_error);
+                    }
                 } else {
                     $error_count++;
                 }
             }
+            
+            wp_send_json_success(array(
+                'message' => sprintf(
+                    __('Import completed. %d records imported, %d errors.', 'woohsn'),
+                    $success_count,
+                    $error_count
+                ),
+                'success_count' => $success_count,
+                'error_count' => $error_count
+            ));
+            
+        } catch (Exception $e) {
+            error_log('[WooHSN] Exception in ajax_import_csv: ' . $e->getMessage());
+            wp_send_json_error(__('Import failed due to an unexpected error.', 'woohsn'));
         }
-        
-        wp_send_json_success(array(
-            'success_count' => $success_count,
-            'error_count' => $error_count
-        ));
     }
     
     /**
@@ -86,30 +100,45 @@ class WooHSN_Import_Export {
             wp_send_json_error(__('You do not have permission to perform this action.', 'woohsn'));
         }
         
-        global $wpdb;
-        
-        $hsn_codes = $wpdb->get_results("SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_codes ORDER BY hsn_code ASC");
-        
-        $filename = 'woohsn_codes_export_' . date('Y-m-d_H-i-s') . '.csv';
-        
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        
-        $output = fopen('php://output', 'w');
-        
-        // Headers
-        fputcsv($output, array('HSN Code', 'Description', 'GST Rate'));
-        
-        // Data
-        foreach ($hsn_codes as $hsn_code) {
-            fputcsv($output, array(
-                $hsn_code->hsn_code,
-                $hsn_code->description,
-                $hsn_code->gst_rate
-            ));
+        try {
+            global $wpdb;
+            
+            $hsn_codes = $wpdb->get_results("SELECT hsn_code, description, gst_rate FROM {$wpdb->prefix}woohsn_codes ORDER BY hsn_code ASC");
+            
+            if (!$hsn_codes) {
+                error_log('[WooHSN] No HSN codes found for export');
+                wp_send_json_error(__('No HSN codes found to export.', 'woohsn'));
+            }
+            
+            $filename = 'woohsn_codes_export_' . date('Y-m-d_H-i-s') . '.csv';
+            
+            header('Content-Type: text/csv');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            
+            $output = fopen('php://output', 'w');
+            
+            if ($output === false) {
+                throw new Exception('Failed to open output stream');
+            }
+            
+            // Headers
+            fputcsv($output, array('HSN Code', 'Description', 'GST Rate'));
+            
+            // Data
+            foreach ($hsn_codes as $hsn_code) {
+                fputcsv($output, array(
+                    $hsn_code->hsn_code,
+                    $hsn_code->description,
+                    $hsn_code->gst_rate
+                ));
+            }
+            
+            fclose($output);
+            exit;
+            
+        } catch (Exception $e) {
+            error_log('[WooHSN] Exception in ajax_export_csv: ' . $e->getMessage());
+            wp_send_json_error(__('Export failed due to an unexpected error.', 'woohsn'));
         }
-        
-        fclose($output);
-        exit;
     }
 }
