@@ -19,12 +19,19 @@ jobs:
           tools: composer, phpcs
 
       - name: PHP Syntax Check
-        run: find . -name "*.php" -exec php -l {} \;
+        run: |
+          find . -name "*.php" -not -path "./vendor/*" -not -path "./node_modules/*" -exec php -l {} \; || exit 1
 
       - name: Install dependencies
         if: hashFiles('composer.json') != ''
         run: composer install --no-interaction --prefer-dist
 
       - name: WordPress Coding Standards
-        if: hashFiles('vendor/bin/phpcs') != ''
-        run: vendor/bin/phpcs
+        run: |
+          if [ -f vendor/bin/phpcs ]; then
+            vendor/bin/phpcs --standard=WordPress --extensions=php --ignore=vendor .
+          elif command -v phpcs &> /dev/null; then
+            phpcs --standard=WordPress --extensions=php --ignore=vendor .
+          else
+            echo "PHPCS not found, skipping coding standards check"
+          fi
