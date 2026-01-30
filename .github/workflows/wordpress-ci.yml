@@ -1,0 +1,37 @@
+name: WordPress Plugin CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  php-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          tools: composer, phpcs
+
+      - name: PHP Syntax Check
+        run: |
+          find . -name "*.php" -not -path "./vendor/*" -not -path "./node_modules/*" -exec php -l {} \; || exit 1
+
+      - name: Install dependencies
+        if: hashFiles('composer.json') != ''
+        run: composer install --no-interaction --prefer-dist
+
+      - name: WordPress Coding Standards
+        run: |
+          if [ -f vendor/bin/phpcs ]; then
+            vendor/bin/phpcs
+          elif command -v phpcs &> /dev/null; then
+            phpcs
+          else
+            echo "PHPCS not found, skipping coding standards check"
+          fi
