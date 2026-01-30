@@ -127,7 +127,7 @@ class WooHSN_Product {
 					data: {
 						action: 'woohsn_suggest_hsn',
 						product_title: productTitle,
-						nonce: '<?php echo wp_create_nonce( 'woohsn_nonce' ); ?>'
+						nonce: '<?php echo esc_attr( wp_create_nonce( 'woohsn_nonce' ) ); ?>'
 					},
 					success: function(response) {
 						if (response.success) {
@@ -173,7 +173,7 @@ class WooHSN_Product {
 					data: {
 						action: 'woohsn_get_hsn_info',
 						hsn_code: hsnCode,
-						nonce: '<?php echo wp_create_nonce( 'woohsn_nonce' ); ?>'
+						nonce: '<?php echo esc_attr( wp_create_nonce( 'woohsn_nonce' ) ); ?>'
 					},
 					success: function(response) {
 						if (response.success && response.data) {
@@ -198,7 +198,7 @@ class WooHSN_Product {
 	 * @param int $post_id Post ID.
 	 */
 	public function save_meta_box_data( $post_id ) {
-		if ( ! isset( $_POST['woohsn_nonce'] ) || ! wp_verify_nonce( $_POST['woohsn_nonce'], basename( __FILE__ ) ) ) {
+		if ( ! isset( $_POST['woohsn_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woohsn_nonce'] ) ), basename( __FILE__ ) ) ) {
 			return;
 		}
 
@@ -229,8 +229,6 @@ class WooHSN_Product {
 
 	/**
 	 * Add product options in general tab.
-	 *
-	 * @param WC_Product $post Product object.
 	 */
 	public function add_product_options() {
 		global $post;
@@ -259,6 +257,10 @@ class WooHSN_Product {
 	 * @param int $post_id Post ID.
 	 */
 	public function save_product_options( $post_id ) {
+		if ( ! isset( $_POST['woohsn_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['woohsn_nonce'] ) ), 'woohsn_nonce' ) ) {
+			return;
+		}
+
 		if ( isset( $_POST['woohsn_code_general'] ) ) {
 			$hsn_code = sanitize_text_field( wp_unslash( $_POST['woohsn_code_general'] ) );
 			update_post_meta( $post_id, 'woohsn_code', $hsn_code );
