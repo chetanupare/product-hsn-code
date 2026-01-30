@@ -37,6 +37,10 @@ class WooHSN_Tax_Calculator {
 			return $tax_totals;
 		}
 
+		// TODO: Implement HSN-based tax calculation logic.
+		// This method currently returns unmodified tax totals.
+		// Future implementation will calculate taxes based on HSN codes.
+
 		return $tax_totals;
 	}
 

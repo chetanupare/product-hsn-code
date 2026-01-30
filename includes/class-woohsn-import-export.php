@@ -39,7 +39,7 @@ class WooHSN_Import_Export {
 			wp_send_json_error( __( 'No file uploaded.', 'woohsn' ) );
 		}
 
-		$file = isset( $_FILES['csv_file'] ) ? $_FILES['csv_file'] : array();
+		$file = isset( $_FILES['csv_file'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_FILES['csv_file'] ) ) : array();
 
 		if ( UPLOAD_ERR_OK !== $file['error'] ) {
 			wp_send_json_error( __( 'File upload error.', 'woohsn' ) );
@@ -81,6 +81,7 @@ class WooHSN_Import_Export {
 				}
 			}
 
+			/* translators: %1$d: number of successful imports, %2$d: number of errors */
 			wp_send_json_success(
 				array(
 					'message'       => sprintf(
@@ -100,7 +101,9 @@ class WooHSN_Import_Export {
 	}
 
 	/**
-	 * AJAX export CSV
+	 * AJAX export CSV.
+	 *
+	 * @throws Exception When file operations fail.
 	 */
 	public function ajax_export_csv() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
