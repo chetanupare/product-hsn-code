@@ -1,0 +1,30 @@
+name: WordPress Plugin CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  php-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          tools: composer, phpcs
+
+      - name: PHP Syntax Check
+        run: find . -name "*.php" -exec php -l {} \;
+
+      - name: Install dependencies
+        if: hashFiles('composer.json') != ''
+        run: composer install --no-interaction --prefer-dist
+
+      - name: WordPress Coding Standards
+        if: hashFiles('vendor/bin/phpcs') != ''
+        run: vendor/bin/phpcs
