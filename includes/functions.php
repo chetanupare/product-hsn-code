@@ -269,22 +269,23 @@ function woohsn_update_order_hsn_data( $order_id, $hsn_data ) {
 /**
  * Get orders with HSN data (HPOS compatible).
  *
+ * Admin-only query. meta_query is required and acceptable here.
+ *
  * @param array $args Query arguments.
  * @return array Orders with HSN data.
  */
 function woohsn_get_orders_with_hsn( $args = array() ) {
-	// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+	// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Admin-only, intentional usage.
 	$default_args = array(
 		'status'     => 'any',
 		'limit'      => -1,
-		'meta_query' => array(
+		'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Admin-only query
 			array(
 				'key'     => '_woohsn_summary',
 				'compare' => 'EXISTS',
-			), // Admin-only query, acceptable performance.
-		),
+			),
+		), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 	);
-	// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 
 	$args = wp_parse_args( $args, $default_args );
 
