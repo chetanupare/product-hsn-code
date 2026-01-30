@@ -281,7 +281,7 @@ function woohsn_get_orders_with_hsn( $args = array() ) {
 			array(
 				'key'     => '_woohsn_summary',
 				'compare' => 'EXISTS',
-			), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			), // Admin-only query, acceptable performance.
 		),
 	);
 	// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
