@@ -374,3 +374,19 @@
     background-color: #d1ecf1;
     border-color: #bee5eb;
 }
+
+/* ==================== */
+/* Screen Reader Styles */
+/* ==================== */
+.screen-reader-text {
+    border: 0 !important;
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    word-wrap: normal !important;
+}
