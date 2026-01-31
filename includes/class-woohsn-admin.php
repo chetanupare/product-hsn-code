@@ -362,22 +362,32 @@ class WooHSN_Admin {
 	}
 
 	/**
-	 * AJAX import HSN codes (placeholder for future implementation)
+	 * AJAX import HSN codes
 	 */
 	public function ajax_import_hsn_codes() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		// TODO: Implement HSN codes import functionality.
-		wp_send_json_error( __( 'Import functionality not yet implemented.', 'woohsn' ) );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'You do not have permission to perform this action.', 'woohsn' ) );
+		}
+
+		// Delegate to import/export class.
+		$import_export = WooHSN_Import_Export::instance();
+		$import_export->ajax_import_csv();
 	}
 
 	/**
-	 * AJAX export HSN codes (placeholder for future implementation)
+	 * AJAX export HSN codes
 	 */
 	public function ajax_export_hsn_codes() {
 		check_ajax_referer( 'woohsn_nonce', 'nonce' );
 
-		// TODO: Implement HSN codes export functionality.
-		wp_send_json_error( __( 'Export functionality not yet implemented.', 'woohsn' ) );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'You do not have permission to perform this action.', 'woohsn' ) );
+		}
+
+		// Delegate to import/export class.
+		$import_export = WooHSN_Import_Export::instance();
+		$import_export->ajax_export_csv();
 	}
 }
